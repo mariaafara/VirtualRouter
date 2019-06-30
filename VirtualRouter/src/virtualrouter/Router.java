@@ -1,17 +1,21 @@
 package virtualrouter;
 //localtest2
 
+import configuration.ConfigurationInterface;
 import sharedPackage.FailedNode;
 import java.io.IOException;
 import sharedPackage.RoutingTableKey;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import sharedPackage.ObservaleStringBuffer;
 
 /**
  * Router Class
@@ -28,7 +32,7 @@ import java.util.logging.Logger;
  * @author maria afara
  *
  */
-public class Router extends Thread {
+public class Router extends UnicastRemoteObject implements ConfigurationInterface {
 
     String hostname;
 
@@ -43,13 +47,85 @@ public class Router extends Thread {
     ArrayList<RoutingTableKey> networks;
     RoutingService routingService;
 
-    /*
-     * Constructor 
-     */
+    public static ObservaleStringBuffer routerInterface;
+
+    public Router(String hostname) throws RemoteException, UnknownHostException {
+        super();
+
+        networks = new ArrayList<RoutingTableKey>();
+
+        portConxs = new PortConxs();
+
+        routingTable = new RoutingTable();
+
+        this.ipAddress = InetAddress.getLocalHost();
+
+        this.hostname = hostname;
+
+        routerInterface = VirtualRouter.buffer;
+//        routerInterface.append(System.getProperty("line.separator"));
+    }
+
+    public String getHostname() {
+        return hostname;
+    }
+
     @Override
+    public void setHostname(String hostname) {
+        this.hostname = hostname;
+    }
+
+    @Override
+    public void initializeConnection(int port, InetAddress neighboraddress, String neighborhostname, int neighborport) {
+        synchronized (this) {
+            if (!portConxs.containsPort(port)) {
+                routerInterface.append("*This port does not exists");
+                routerInterface.append(System.getProperty("line.separator"));
+                //  System.out.println("*This port does not exists");
+                return;
+            }
+            portConxs.getPortInstance(port).connect(neighboraddress, neighborhostname, neighborport);
+        }
+    }
+
+    @Override
+    public void initializePort(int port) {
+        synchronized (this) {
+            if (portConxs.containsPort(port)) {
+                routerInterface.append("*This port exists");
+                routerInterface.append(System.getProperty("line.separator"));
+//                System.out.println("*This port exists");
+                return;
+            }
+            Port portclass = new Port(port, hostname, routingTable);
+
+            portConxs.addPort(port, portclass);//3m syv 3ndee lport
+
+            portclass.start();
+        }
+
+    }
+
+    @Override
+    public void initializeRoutingProtocol(ArrayList<RoutingTableKey> networks) {
+
+        routingService = new RoutingService(routingTable, networks);
+        routingService.start();
+        routerInterface.append("*initializeRoutingProtocol");
+        routerInterface.append(System.getProperty("line.separator"));
+//        System.out.println("*initializeRoutingProtocol");
+    }
+
+    public InetAddress getIpAddress() {
+        return ipAddress;
+    }
+
+    public void setIpAddress(InetAddress ipAddress) {
+        this.ipAddress = ipAddress;
+    }
+
     public void run() {
 
-        super.run();
         Scanner scn = new Scanner(System.in);
         System.out.println("enter name of router.............");
         String name = scn.nextLine();
@@ -151,78 +227,11 @@ public class Router extends Thread {
                 }
             }
             //stopRouter();
-            this.stop();
+            //  this.stop();
 
         }
-        while (true) {
-        }
 
     }
 
-    public void stopRouter() {
-
-        this.stop();
-        routingService.routingTableBroadcast.stopBroadcast();
-    }
-
-    public Router() throws UnknownHostException {
-
-        networks = new ArrayList<RoutingTableKey>();
-
-        portConxs = new PortConxs();
-
-        routingTable = new RoutingTable();
-
-        this.ipAddress = InetAddress.getLocalHost();
-
-    }
-
-    public String getHostname() {
-        return hostname;
-    }
-
-    public void setHostname(String hostname) {
-        this.hostname = hostname;
-    }
-
-    public void initializeConnection(int port, InetAddress neighboraddress, String neighborhostname, int neighborport) {
-        synchronized (this) {
-            if (!portConxs.containsPort(port)) {
-                System.out.println("*This port does not exists");
-                return;
-            }
-            portConxs.getPortInstance(port).connect(neighboraddress, neighborhostname, neighborport);
-        }
-    }
-
-    public void initializePort(int port) {
-        synchronized (this) {
-            if (portConxs.containsPort(port)) {
-                System.out.println("*This port exists");
-                return;
-            }
-            Port portclass = new Port(port, hostname, routingTable);
-
-            portConxs.addPort(port, portclass);//3m syv 3ndee lport
-
-            portclass.start();
-        }
-
-    }
-
-    public void initializeRoutingProtocol(ArrayList<RoutingTableKey> networks) {
-
-        routingService = new RoutingService(routingTable, networks);
-        routingService.start();
-        System.out.println("*initializeRoutingProtocol");
-    }
-
-    public InetAddress getIpAddress() {
-        return ipAddress;
-    }
-
-    public void setIpAddress(InetAddress ipAddress) {
-        this.ipAddress = ipAddress;
-    }
-
+    
 }

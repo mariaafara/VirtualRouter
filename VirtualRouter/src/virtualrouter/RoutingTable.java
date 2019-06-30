@@ -13,6 +13,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import sharedPackage.ObservaleStringBuffer;
+
 /**
  * this class represents the routing table which is a hash map
  *
@@ -20,10 +22,7 @@ import java.util.Map;
  */
 public class RoutingTable implements Serializable {
 
-//    HashMap<InetAddress, RoutingTableInfo> routingEntries;
-//    HashMap<Integer, RoutingTableInfo> routingEntries;
-    // HashMap<String, RoutingTableInfo> routingEntries;
-    // Create a date object
+    public static ObservaleStringBuffer routerInterface;
     HashMap<RoutingTableKey, RoutingTableInfo> routingEntries;
 
     //transient krmel ma ynb3to lobjects manon serilizable kmn 
@@ -31,22 +30,22 @@ public class RoutingTable implements Serializable {
     transient final Object lockPortconxs = new Object();
     LocalTime myObjDate;
 
-    public HashMap<RoutingTableKey, RoutingTableInfo> getRoutingEntries() {
-        synchronized (lockRoutingTable) {
-            return routingEntries;
-        }
-    }
-
     public RoutingTable() {
 
-//            routingEntries = new HashMap<InetAddress, RoutingTableInfo>();
-//            routingEntries = new HashMap<String, RoutingTableInfo>();
+        routerInterface = VirtualRouter.buffer;
+
         routingEntries = new HashMap<>();
         this.myObjDate = LocalTime.now();
         // Display the current date
 
     }
 //if itcontain this network with the ip and port set the established boolean to true
+
+    public HashMap<RoutingTableKey, RoutingTableInfo> getRoutingEntries() {
+        synchronized (lockRoutingTable) {
+            return routingEntries;
+        }
+    }
 
     public void establishEntry(InetAddress ip, String hostname) {
 
@@ -221,8 +220,7 @@ public class RoutingTable implements Serializable {
         synchronized (lockRoutingTable) {
             ArrayList<FailedNode> arrayfn = new ArrayList<>();
             System.out.println("**");
-            
-            
+
             Map<RoutingTableKey, RoutingTableInfo> tempRT = new HashMap<RoutingTableKey, RoutingTableInfo>();
             tempRT.putAll(routingEntries);
             Iterator<Map.Entry<RoutingTableKey, RoutingTableInfo>> itr = tempRT.entrySet().iterator();
@@ -242,7 +240,7 @@ public class RoutingTable implements Serializable {
 
                 }
             }
-            
+
 //            for (HashMap.Entry<RoutingTableKey, RoutingTableInfo> entry : routingEntries.entrySet()) {
 //                //router m7et l a 
 //                //btuslne failed nodem7t l a 
@@ -390,81 +388,53 @@ public class RoutingTable implements Serializable {
 
         }
     }
-
-//    public void printTable(String hint) {
-//        // creating iterator for HashMap 
-//        synchronized (this) {
-//
-////            Iterator<HashMap.Entry<InetAddress, RoutingTableInfo>> routingEntriesIterator = routingEntries.entrySet().iterator();
-//            Iterator<HashMap.Entry<String, RoutingTableInfo>> routingEntriesIterator = routingEntries.entrySet().iterator();
-//
-////            InetAddress destAddress;
-//            String destAddress;
-//            System.out.print("----------------   Routing Table " + hint + " -----------------------------------------" + "\n");
-//            System.out.print("-----------|----------------|----------------|---------|----------|-------------|------" + "\n");
-//            System.out.print("-----------|  Dest Network  |  Next Hop Port |   Cost  |  myport  |  Activated  |------" + "\n");
-//            System.out.print("-----------|----------------|----------------|---------|----------|-------------|------" + "\n");
-//
-//            while (routingEntriesIterator.hasNext()) {
-//
-////                HashMap.Entry<InetAddress, RoutingTableInfo> pair = (HashMap.Entry<InetAddress, RoutingTableInfo>) routingEntriesIterator.next();
-//                HashMap.Entry<String, RoutingTableInfo> pair = (HashMap.Entry<String, RoutingTableInfo>) routingEntriesIterator.next();
-//
-////                destAddress = (InetAddress) pair.getKey();
-//                destAddress = (String) pair.getKey();
-//                RoutingTableInfo destForwardingInfo = (RoutingTableInfo) pair.getValue();
-////destAddress.getHostAddress()
-//                System.out.print("-----------|\t" + destAddress + "\t    |\t");//bs ntb3 linet address btbi3to 3m berj3 forword slash bas destAddress.getHostName() 3m trj3 aw2et msln one.one.one.
-//                System.out.print(" " + destForwardingInfo.nextHop + "\t    |    ");
-//                System.out.print(destForwardingInfo.cost + "      |   ");
-//                System.out.print(destForwardingInfo.port + "   |    ");
-//                System.out.print(destForwardingInfo.activated + "\t|------");
-//
-//                System.out.println();
-//            }
-//            System.out.print("-----------|----------------|----------------|---------|----------|-------------|------" + "\n");
-//            System.out.print("---------------------------------------------------------------------------------------" + "\n");
-//
-//        }
-//    }
-    public void printTable(String hint) {
+public void printTable(String hint) {
         // creating iterator for HashMap 
         synchronized (this) {
 
-//            Iterator<HashMap.Entry<InetAddress, RoutingTableInfo>> routingEntriesIterator = routingEntries.entrySet().iterator();
             Iterator<HashMap.Entry<RoutingTableKey, RoutingTableInfo>> routingEntriesIterator = routingEntries.entrySet().iterator();
 
-//            InetAddress destAddress;
             String destAddress, nextipHost;
-            System.out.print("----------------   Routing Table " + hint + " -------------------------------------------------------------------------------------" + "\n");
-            System.out.print("-----------|--------------------|--------------------|----------------|----------|-------------|-------------|--------------|------" + "\n");
-            System.out.print("-----------|  Dest Network      |  next ip-Host      |  Next Hop Port |   Cost   |  myport     |  Activated  |  Established |------" + "\n");
-            System.out.print("-----------|--------------------|--------------------|----------------|----------|-------------|-------------|--------------|------" + "\n");
-            System.out.print("---------------------------------------Last updated" + this.myObjDate + "--------------------------------------------------------------------" + "\n");
-            System.out.print("-----------|--------------------|--------------------|----------------|----------|-------------|-------------|--------------|------" + "\n");
-
+            routerInterface.append("----------------   Routing Table " + hint + " -------------------------------------------------------------------------------------" + "\n");
+            routerInterface.append(System.getProperty("line.separator"));
+            routerInterface.append("-----------|--------------------|--------------------|----------------|----------|-------------|-------------|--------------|------" + "\n");
+            routerInterface.append(System.getProperty("line.separator"));
+            routerInterface.append("-----------|  Dest Network      |  next ip-Host      |  Next Hop Port |   Cost   |  myport     |  Activated  |  Established |------" + "\n");
+            routerInterface.append(System.getProperty("line.separator"));
+            routerInterface.append("-----------|--------------------|--------------------|----------------|----------|-------------|-------------|--------------|------" + "\n");
+            routerInterface.append(System.getProperty("line.separator"));
+            routerInterface.append("---------------------------------------Last updated" + this.myObjDate + "--------------------------------------------------------------------" + "\n");
+            routerInterface.append(System.getProperty("line.separator"));
+            routerInterface.append("-----------|--------------------|--------------------|----------------|----------|-------------|-------------|--------------|------" + "\n");
+            routerInterface.append(System.getProperty("line.separator"));
             while (routingEntriesIterator.hasNext()) {
 
-//                HashMap.Entry<InetAddress, RoutingTableInfo> pair = (HashMap.Entry<InetAddress, RoutingTableInfo>) routingEntriesIterator.next();
                 HashMap.Entry<RoutingTableKey, RoutingTableInfo> pair = (HashMap.Entry<RoutingTableKey, RoutingTableInfo>) routingEntriesIterator.next();
 
                 destAddress = pair.getKey().getIp().getHostAddress() + "-" + pair.getKey().getHostname();
                 nextipHost = pair.getValue().getNextipHost().getIp().getHostAddress() + "-" + pair.getValue().getNextipHost().getHostname();
                 RoutingTableInfo destForwardingInfo = (RoutingTableInfo) pair.getValue();
 //destAddress.getHostAddress()
-                System.out.print("-----------|  " + destAddress + "   |");//bs ntb3 linet address btbi3to 3m berj3 forword slash bas destAddress.getHostName() 3m trj3 aw2et msln one.one.one.
-                System.out.print(" " + nextipHost + "    | ");
-                System.out.print(" " + destForwardingInfo.nextHop + "\t    |    ");
-                System.out.print(destForwardingInfo.cost + "    |   ");
-                System.out.print(destForwardingInfo.port + "       |    ");
-                System.out.print(destForwardingInfo.activated + "   |    ");
-                System.out.print(destForwardingInfo.established + "\t|------");
+                routerInterface.append("-----------|  " + destAddress + "   |");//bs ntb3 linet address btbi3to 3m berj3 forword slash bas destAddress.getHostName() 3m trj3 aw2et msln one.one.one.
+                routerInterface.append(System.getProperty("line.separator"));
+                routerInterface.append(" " + nextipHost + "    | ");
+                routerInterface.append(System.getProperty("line.separator"));
+                routerInterface.append(" " + destForwardingInfo.nextHop + "\t    |    ");
+                routerInterface.append(System.getProperty("line.separator"));
+                routerInterface.append(destForwardingInfo.cost + "    |   ");
+                routerInterface.append(System.getProperty("line.separator"));
+                routerInterface.append(destForwardingInfo.port + "       |    ");
+                routerInterface.append(System.getProperty("line.separator"));
+                routerInterface.append(destForwardingInfo.activated + "   |    ");
+                routerInterface.append(System.getProperty("line.separator"));
+                routerInterface.append(destForwardingInfo.established + "\t|------");
 
-                System.out.println();
+                routerInterface.append(System.getProperty("line.separator"));
             }
-            System.out.print("-----------|--------------------|--------------------|----------------|----------|-------------|-------------|--------------|-------" + "\n");
-            System.out.print("------------------------------------------------------------------------------------------------------------------------------------" + "\n");
-
+            routerInterface.append("-----------|--------------------|--------------------|----------------|----------|-------------|-------------|--------------|-------" + "\n");
+            routerInterface.append(System.getProperty("line.separator"));
+            routerInterface.append("------------------------------------------------------------------------------------------------------------------------------------" + "\n");
+            routerInterface.append(System.getProperty("line.separator"));
         }
     }
 }

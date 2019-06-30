@@ -25,11 +25,15 @@ public class PortConnectionWait extends Thread {
     RoutingTable rt;
     private Reciever reciever;
     private String myhostname;
+    // public ObservaleStringBuffer routerInterface;
 
     public PortConnectionWait(String myhostname, int myport, Port p, RoutingTable rt) {
 
         try {
             //Creating server socket
+            //  routerInterface = RouterSimulation.buffer;
+            VirtualRouter.buffer.append("*port " + myport + " waiting for a conx");
+            VirtualRouter.buffer.append(System.getProperty("line.separator"));
             System.out.println("*port " + myport + " waiting for a conx");
             serversocket = new ServerSocket(myport);
             this.p = p;
@@ -55,8 +59,7 @@ public class PortConnectionWait extends Thread {
                 socket = serversocket.accept();
 
                 // rt.printTable("**Checking**");
-              //  System.out.println("*socket :myport " + socket.getLocalPort() + " destport " + socket.getPort());
-
+                //  System.out.println("*socket :myport " + socket.getLocalPort() + " destport " + socket.getPort());
                 System.out.println("*connection accepteed at port " + myport);
 
                 ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
@@ -72,9 +75,9 @@ public class PortConnectionWait extends Thread {
                     rt.activateEntry(neighbor.neighborAddress, neighbor.neighborname);
 
                     //  System.out.println("after activateEntry and before set socket");
-                    System.out.println("\n");
+                    // System.out.println("\n");
                     rt.printTable("--after add activation--");
-                    System.out.println("\n");
+                    // System.out.println("\n");
 
                     p.setSocket(socket);
                     p.setStreams(objectInputStream, objectOutputStream);
