@@ -84,7 +84,7 @@ public class VirtualRouter extends Application {
                         hostname = txtHostname.getText();
                         registry.rebind(txtHostname.getText(), router);
                         Platform.runLater(() -> {
-                            buffer.appendText("Router creaated and rebind to the registry with its name\n");
+                            buffer.appendText("Router created and rebinded to the registry with its name "+hostname+"\n");
                         });
                         
                         txtHostname.setDisable(true);
@@ -125,7 +125,7 @@ public class VirtualRouter extends Application {
         });
         hostnameConnectionbox.getChildren().addAll(txtHostname, txtRegistryPort, btnConnect, btnExport);
         root.getChildren().addAll(hostnameConnectionbox, buffer);
-        buffer.appendText("kakjhas\nsdfdghj\nadsafdsgdhj\nadsafdsgf\n");
+        //buffer.appendText("kakjhas\nsdfdghj\nadsafdsgdhj\nadsafdsgf\n");
         primaryStage.setScene(new Scene(root, 600, 400));
 
         primaryStage.setTitle("Router");

@@ -45,17 +45,17 @@ public class Router extends UnicastRemoteObject implements ConfigurationInterfac
 
     PortConxs portConxs;
 
-    ArrayList<RoutingTableKey> networks;
-    RoutingService routingService;
-    ArrayList<String> strings;
+    ArrayList<RoutingTableKey> neighbors;
+    ArrayList<RoutingTableKey> establishedneighbors;
 
-    //public static ObservaleStringBuffer routerInterface;
+    RoutingService routingService;
+
     public Router(String hostname) throws RemoteException, UnknownHostException {
         super();
         System.out.println("my local host ------> " + InetAddress.getLocalHost());
 
-        networks = new ArrayList<RoutingTableKey>();
-
+        neighbors = new ArrayList<RoutingTableKey>();
+        establishedneighbors = new ArrayList<RoutingTableKey>();
         portConxs = new PortConxs();
 
         routingTable = new RoutingTable();
@@ -63,15 +63,7 @@ public class Router extends UnicastRemoteObject implements ConfigurationInterfac
         this.ipAddress = InetAddress.getLocalHost();
 
         this.hostname = hostname;
-        strings = new ArrayList<String>();
 
-//        for (int i = 0; i < 250; i++) {
-//            strings.add("*"+i + "\n");
-//        }
-//        VirtualRouter.printToScreen(strings);
-        //strings.clear();
-        //   routerInterface = VirtualRouter.buffer;
-//        routerInterface.appendText(System.getProperty("line.separator"));
     }
 
     @Override
@@ -95,6 +87,7 @@ public class Router extends UnicastRemoteObject implements ConfigurationInterfac
                 System.out.println("*This port does not exists");
                 return;
             }
+            neighbors.add(new RoutingTableKey(neighboraddress, neighborhostname));
             portConxs.getPortInstance(port).connect(neighboraddress, neighborhostname, neighborport);
         }
     }
@@ -125,13 +118,19 @@ public class Router extends UnicastRemoteObject implements ConfigurationInterfac
 
         routingService = new RoutingService(routingTable, networks);
         routingService.start();
-//        strings.add("initializeRoutingProtocol " + k);
-//        VirtualRouter.printToScreen(strings);
-//        strings.clear();
+
+        for (int i = 0; i < networks.size(); i++) {
+
+            if (routingTable.routingEntries.containsKey(networks.get(i)) && routingTable.routingEntries.get(networks.get(i)).activated) {
+                routingTable.establishEntry(networks.get(i));
+                establishedneighbors.add(networks.get(i));
+            }
+        }
+
         Platform.runLater(() -> {
             VirtualRouter.buffer.appendText("initializeRoutingProtocol " + k);
         });
-        // VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
+
         System.out.println("*initializeRoutingProtocol");
     }
 
@@ -175,19 +174,17 @@ public class Router extends UnicastRemoteObject implements ConfigurationInterfac
 
         if (scn.nextLine().equals("start")) {
             while (true) {
-                try {
-                    System.out.println("enter a network host name:");
-                    String nextHost = scn.nextLine();
-                    if (nextHost.equals("end")) {
-                        System.out.println("end");
-                        initializeRoutingProtocol(networks);
-                        break;
-                    }
-                    System.out.println("adding" + nextHost);
-                    networks.add(new RoutingTableKey(InetAddress.getLocalHost(), nextHost));
-                } catch (UnknownHostException ex) {
-                    Logger.getLogger(Router.class.getName()).log(Level.SEVERE, null, ex);
+
+                System.out.println("enter a network host name:");
+                String nextHost = scn.nextLine();
+                if (nextHost.equals("end")) {
+                    System.out.println("end");
+                    //      initializeRoutingProtocol(networks);
+                    break;
                 }
+                System.out.println("adding" + nextHost);
+                //       networks.add(new RoutingTableKey(InetAddress.getLocalHost(), nextHost));
+
             }
 
         }
@@ -279,7 +276,7 @@ public class Router extends UnicastRemoteObject implements ConfigurationInterfac
                 }
             }
         }
-    
+
         routingService.routingTableBroadcast.stopBroadcast();
 
         for (HashMap.Entry<RoutingTableKey, RoutingTableInfo> entry2 : routingTable.routingEntries.entrySet()) {
@@ -313,6 +310,43 @@ public class Router extends UnicastRemoteObject implements ConfigurationInterfac
             Logger.getLogger(Router.class.getName()).log(Level.SEVERE, null, ex);
         }
         return ip;
+    }
+
+    @Override
+    public boolean checkPort(int port) throws RemoteException {
+        return portConxs.containsPort(port);
+    }
+
+    @Override
+    public boolean checkNeighbor(InetAddress neghip, String neighname) throws RemoteException {
+        RoutingTableKey net = new RoutingTableKey(neghip, neighname);
+        boolean isneighbor = false;
+        for (RoutingTableKey neighbor : neighbors) {
+
+            if (net.equals(neighbor)) {
+                isneighbor = true;
+                //  buffer.append("--is neigh--");
+            } else {
+                isneighbor = false;
+
+            }
+        }
+        return isneighbor;
+    }
+
+    @Override
+    public boolean checkEstablishedNeighbor(InetAddress neghip, String neighname) throws RemoteException {
+        RoutingTableKey net = new RoutingTableKey(neghip, neighname);
+        boolean isestablishedalready = false;
+        for (RoutingTableKey establishedneighbor : establishedneighbors) {
+            if (establishedneighbor.equals(net)) {
+                //already established
+                isestablishedalready = true;
+
+            }
+
+        }
+        return isestablishedalready;
     }
 
 }

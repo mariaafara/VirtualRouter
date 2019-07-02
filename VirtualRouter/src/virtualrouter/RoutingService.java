@@ -40,13 +40,13 @@ public class RoutingService extends Thread {
         //assigned i.e allowing broadcasting and recieving routing table from only those networks
         //ktir important he shi 
         ///Hon ma lezm n3ml establish la routing protocol la entry mana activated 
-        for (int i = 0; i < networks.size(); i++) {
-            // System.out.println("networks looop\n");
-
-            if (routingTable.routingEntries.get(networks.get(i)).activated) {
-                routingTable.establishEntry(networks.get(i));
-            }
-        }
+//        for (int i = 0; i < networks.size(); i++) {
+//            // System.out.println("networks looop\n");
+//   if (routingTable.routingEntries.get(networks.get(i)).activated) {
+//                routingTable.establishEntry(networks.get(i));
+//            }
+//         
+//        }
 
         routingTableBroadcast = new RoutingTableBroadcast(routingTable);
         routingTableBroadcast.start();

@@ -33,7 +33,7 @@ public class PortConnectionWait extends Thread {
         try {
 
             Platform.runLater(() -> {
-                VirtualRouter.buffer.appendText("*port " + myport + " waiting for a conx");
+                VirtualRouter.buffer.appendText("*port " + myport + " waiting for a conx\n");
             });
             System.out.println("*port " + myport + " waiting for a conx");
             serversocket = new ServerSocket(myport);
@@ -77,7 +77,7 @@ public class PortConnectionWait extends Thread {
 
                     //  System.out.println("after activateEntry and before set socket");
                     // System.out.println("\n");
-                    rt.printTable("--after add activation--");
+                    rt.printTable("--Activated an entry--");
                     // System.out.println("\n");
 
                     p.setSocket(socket);
