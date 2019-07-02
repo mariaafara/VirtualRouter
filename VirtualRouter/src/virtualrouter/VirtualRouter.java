@@ -75,18 +75,20 @@ public class VirtualRouter extends Application {
             @Override
             public void handle(ActionEvent t) {
                 try {
-
-                    Registry registry = LocateRegistry.createRegistry(Integer.parseInt(txtRegistryPort.getText()));//1099
-                    router = new Router(txtHostname.getText());
-                    hostname = txtHostname.getText();
-                    registry.rebind(txtHostname.getText(), router);
-                    txtHostname.setDisable(true);
-                    txtRegistryPort.setDisable(true);
-                    // Process.Start("path/to/your/file")
-                    primaryStage.setTitle("Router " + router.getHostname());
-                    btnConnect.setText("Disconnect");
-                    btnExport.setDisable(false);
-
+                    if (btnConnect.getText().equals("Connect")) {
+                        Registry registry = LocateRegistry.createRegistry(Integer.parseInt(txtRegistryPort.getText()));//1099
+                        router = new Router(txtHostname.getText());
+                        hostname = txtHostname.getText();
+                        registry.rebind(txtHostname.getText(), router);
+                        txtHostname.setDisable(true);
+                        txtRegistryPort.setDisable(true);
+                        // Process.Start("path/to/your/file")
+                        primaryStage.setTitle("Router " + router.getHostname());
+                        btnConnect.setText("Disconnect");
+                        btnExport.setDisable(false);
+                    } else if (btnConnect.getText().equals("Disconnect")) {
+                        router.disconnet();
+                    }
                 } catch (RemoteException ex) {
                     Logger.getLogger(Router.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (UnknownHostException ex) {
