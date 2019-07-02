@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 
 /**
  * This Thread updates router ' s routing table
@@ -30,10 +31,10 @@ public class RoutingTableUpdate extends Thread {
     int recievedport;
     String hostname;
     Port myPP;
-    ArrayList<String> strings;
+
+    RoutingTableKey destAddress;
 
     public RoutingTableUpdate(RoutingTable recievedroutingtable, String hostname, int myport, ObjectOutputStream oos, RoutingTable rt, Port myPP) {
-
 
         this.recievedroutingtable = recievedroutingtable;
         this.myport = myport;
@@ -69,8 +70,6 @@ public class RoutingTableUpdate extends Thread {
 
             boolean isUpdated = false;
 
-            RoutingTableKey destAddress;
-
             int destCost;
             //gets the port of which the router sent the RT  from.
 
@@ -90,7 +89,6 @@ public class RoutingTableUpdate extends Thread {
 
                     //"Cost for this destination in my routing table is "  destCost
                     //"Cost for this destination in received routing table is "  pair.getValue().cost
-                
                     if (destCost > (1 + pair.getValue().cost)) {
                         //which is smaller than my cost for the destination
                         Port p = rt.getPortClass(myport);
@@ -99,7 +97,9 @@ public class RoutingTableUpdate extends Thread {
                         RoutingTableKey nextipHost = rt.getNextipHost(myport);
 
                         rt.updateEntry(destAddress.getIp(), destAddress.getHostname(), nextipHost, recievedport, p, 1 + pair.getValue().cost);
-
+                        Platform.runLater(() -> {
+                            VirtualRouter.buffer.appendText("Updating " + destAddress + " entry learned from " + destAddress + "\n");
+                        });
                         isUpdated = true;
 
                     }
@@ -112,7 +112,10 @@ public class RoutingTableUpdate extends Thread {
                     RoutingTableKey nextipHost = rt.getNextipHost(myport);
                     rt.addEntry(destAddress, nextipHost, recievedport, pair.getValue().cost + 1, myport, p, true, true);
                     isUpdated = true;
-                    System.out.println(nextipHost);
+                    //System.out.println(nextipHost);
+                    Platform.runLater(() -> {
+                        VirtualRouter.buffer.appendText("Adding a new entry to the RT learned from " + destAddress + "\n");
+                    });
                     System.out.println("*updated");
                 }
 

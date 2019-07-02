@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 
 /**
  *
@@ -45,16 +46,22 @@ public class FailedNodeRecieve extends Thread {
         ///!!!!!!!!!!!!!!!!!!!!!!!! commented newely
         ArrayList<FailedNode> arrayfn = rt.deleteFailedNodes(dest, nextipHost, myRTK);
         System.out.println("----------------" + arrayfn.size());
-        if(arrayfn.size() > 0){
-             new threadStopReceiveRT(canReceive, 15000).start();
+        if (arrayfn.size() > 0) {
+            new threadStopReceiveRT(canReceive, 15000).start();
         }
         for (HashMap.Entry<RoutingTableKey, RoutingTableInfo> entry2 : rt.routingEntries.entrySet()) {
             System.out.println("*now broadcasting");
+            Platform.runLater(() -> {
+                VirtualRouter.buffer.appendText("Now broadcasting the delted entries \n");
+            });
             if (entry2.getValue().cost == 1) {
                 try {
                     //lneighbors
                     for (int i = 0; i < arrayfn.size(); i++) {
                         System.out.print("\n*broadcast newfn to " + entry2.getKey());
+                        Platform.runLater(() -> {
+                            VirtualRouter.buffer.appendText("Broadcast deleted entry to " + entry2.getKey() + "\n");
+                        });
                         entry2.getValue().portclass.getOos().writeObject(arrayfn.get(i));
                     }
                 } catch (IOException ex) {
@@ -64,8 +71,8 @@ public class FailedNodeRecieve extends Thread {
 
         }
         System.out.print("\n");
-        rt.printTable("After Deleting Failed Node  ");
-        System.out.println("\n");
+        rt.printTable("After **Deleting** Failed Node  ");
+        //System.out.println("\n");
 
     }
 

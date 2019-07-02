@@ -45,7 +45,7 @@ public class Reciever extends Thread {
     public Reciever(InetAddress neighip, String neighhostname, int neighport, int myport, String myhostname, ObjectInputStream ois, ObjectOutputStream oos, RoutingTable rt, Port myPortt) {
 
         Platform.runLater(() -> {
-            VirtualRouter.buffer.appendText("*reciever initialized");
+            VirtualRouter.buffer.appendText("*reciever initialized" + "\n");
         });
 
         System.out.println("*reciever initialized");
@@ -82,7 +82,7 @@ public class Reciever extends Thread {
                 if (recievedObject instanceof RoutingTable) {
 
                     Platform.runLater(() -> {
-                        VirtualRouter.buffer.appendText("*recieved routing table");
+                        VirtualRouter.buffer.appendText("*recieved routing table" + "\n");
                     });
                     // VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
                     System.out.println("*recieved routing table");
@@ -94,7 +94,7 @@ public class Reciever extends Thread {
                         } else {
 
                             Platform.runLater(() -> {
-                                VirtualRouter.buffer.appendText("*Discarding routing table 1st else");
+                                VirtualRouter.buffer.appendText("Discarding routing table " + "\n");
                             });
                             // VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
                             System.out.println("Discarding routing table");
@@ -102,14 +102,17 @@ public class Reciever extends Thread {
                     } else {
 
                         Platform.runLater(() -> {
-                            VirtualRouter.buffer.appendText("*Discarding routing table 2st else");
+
+                            VirtualRouter.buffer.appendText("Discarding routing table" + "\n");
                         });
                         //VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
                         System.out.println("Discarding routing table");
                     }
                 } else if (recievedObject instanceof FailedNode) {
                     //lzm nt2kad hon iza lzm lrouting protocol kmen bdo ykoun established awla 
-
+                    Platform.runLater(() -> {
+                        VirtualRouter.buffer.appendText("Recieved Failed node" + "\n");
+                    });
                     System.out.print("*recieved a failed node");
                     FailedNode fn = (FailedNode) recievedObject;
                     System.out.println("\n*" + fn.toString());
@@ -127,11 +130,25 @@ public class Reciever extends Thread {
                             ///iza huwe zeto ana and and lhostname  !!!!!!
                             if (p.header.getDestinationAddress().equals(Inet4Address.getLocalHost().toString()) && p.header.getDestinationHostname().equals(myhostname)) {
                                 messageReceived = p.Message;
+                                Platform.runLater(() -> {
+                                    VirtualRouter.buffer.appendText("----------------------------------------------------------------\n");
+                                });
+                                Platform.runLater(() -> {
+                                    VirtualRouter.buffer.appendText("Received Message =" + messageReceived + "\n");
+                                });
+                                Platform.runLater(() -> {
+                                    VirtualRouter.buffer.appendText("From :" + p.header.getSourceAddress() + "-" + p.header.getSourceHostname() + "\n");
+                                });
+                                Platform.runLater(() -> {
+                                    VirtualRouter.buffer.appendText("----------------------------------------------------------------\n");
+                                });
                                 System.out.println("*Received Message =" + messageReceived);
-                                System.out.println("*From             =" + p.header.getSourceAddress() + ":" + p.header.getSourceHostname());
+                                System.out.println("*From :" + p.header.getSourceAddress() + "-" + p.header.getSourceHostname());
 
                             } else {
-
+                                Platform.runLater(() -> {
+                                    VirtualRouter.buffer.appendText("Forwarding packet to " + p.header.getDestination().toString() + "\n");
+                                });
                                 System.out.println("*forwarding packet");
                                 ///b3tiha l ip wl host name  bdel get !!!!!
                                 RoutingTableInfo rtInfo = rt.getEntry(p.header.getDestination());
@@ -140,15 +157,36 @@ public class Reciever extends Thread {
 
                                     oos.writeObject(p);
                                 } else {
-                                    System.out.println("*Destination " + p.header.getDestination().toString() + " Doesnt exist Or Routing Didnt work yet..");
+                                    Platform.runLater(() -> {
+                                        VirtualRouter.buffer.appendText("Destination " + p.header.getDestination().toString() + " Doesnt exist Or Routing Didnt work yet..\n");
+                                    });
+                                    System.out.println("*Destination " + p.header.getDestination().toString() + " doesnt exist Or Routing Didnt work yet..");
                                 }
 
                             }
 
                         } else {
+                            Platform.runLater(() -> {
+                                VirtualRouter.buffer.appendText("Packet TTL exceeded, therefore the message is dropped!\n");
+                            });
                             System.out.println("Packet TTL exceeded, therefore the message is dropped!");
                         }
                     } else {
+                        Platform.runLater(() -> {
+                            VirtualRouter.buffer.appendText("Cheksum not equal, there's an alteration of the message\n");
+                        });
+                        Platform.runLater(() -> {
+                            VirtualRouter.buffer.appendText("Initial Cheksum =" + p.header.getHeaderCheksum() + "\n");
+                        });
+                        Platform.runLater(() -> {
+                            try {
+                                VirtualRouter.buffer.appendText("Current Cheksum =" + p.header.getChecksum(p.header.cheksumInput()) + "\n");
+                            } catch (IOException ex) {
+                                Logger.getLogger(Reciever.class.getName()).log(Level.SEVERE, null, ex);
+                            } catch (NoSuchAlgorithmException ex) {
+                                Logger.getLogger(Reciever.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        });
                         System.out.println("*Cheksum not equal, there's an alteration of the message");
                         System.out.println("*Initial Cheksum =" + p.header.getHeaderCheksum());
                         System.out.println("*Current Cheksum =" + p.header.getChecksum(p.header.cheksumInput()));
@@ -156,6 +194,9 @@ public class Reciever extends Thread {
                     }
 
                 } else {
+                    Platform.runLater(() -> {
+                        VirtualRouter.buffer.appendText("recieved unknown type of object " + recievedObject.getClass() + "\n");
+                    });
                     System.out.println("*recieved unknown type of object " + recievedObject.getClass());
                 }
 
@@ -180,7 +221,7 @@ public class Reciever extends Thread {
     public void stopRecieving() {
 
         Platform.runLater(() -> {
-            VirtualRouter.buffer.appendText("Stoped Recieving at port " + myport);
+            VirtualRouter.buffer.appendText("Stoped Recieving at port " + myport + "\n");
         });
         System.out.println("\n*stoped Recieving at port " + myport);
         this.stop();
