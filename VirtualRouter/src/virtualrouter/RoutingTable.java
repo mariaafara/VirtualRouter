@@ -331,7 +331,7 @@ public class RoutingTable implements Serializable {
             string = "\n|--------------------------------------------------------------------------------------------------------------------|\n"
                     + " " + hint + "--Last updated " + myDate + "\n"
                     + "|--------------------------------------------------------------------------------------------------------------------|\n"
-                    + "Dest Network\t\tnext ip-Host\t\tCost\t\tmyport\t\tnextPort\t\tActivated\t\tEstablished\n"
+                    + "Dest Network\t\tnext ip-Host\t\tCost\t\tnextport\t\tmyPort\t\tActivated\t\tEstablished\n"
                     + "|--------------------------------------------------------------------------------------------------------------------|\n";
 
             Platform.runLater(() -> {
