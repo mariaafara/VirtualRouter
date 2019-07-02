@@ -6,8 +6,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import sharedPackage.RoutingTableKey;
 
 /**
@@ -28,9 +30,10 @@ public class PortConnectionEstablish extends Thread {
     private String neighborhostname;
     private String myhostname;
     private Reciever reciever;
+    ArrayList<String> strings;
 
     public PortConnectionEstablish(int myport, String myhostname, InetAddress neighborip, String neighborhostname, int neighborport, Port p, RoutingTable rt) {
-
+        strings = new ArrayList<String>();
         this.neighborport = neighborport;
         this.myport = myport;
         this.p = p;
@@ -47,8 +50,12 @@ public class PortConnectionEstablish extends Thread {
         if (!p.isconnectionEstablished()) {
 
             try {
-                VirtualRouter.buffer.appendText("*establishing connection with ip=" + neighborip + " port=" + neighborport);
-
+//                strings.add("*establishing connection with ip=" + neighborip + " port=" + neighborport);
+//                VirtualRouter.printToScreen(strings);
+//                strings.clear();
+                Platform.runLater(() -> {
+                    VirtualRouter.buffer.appendText("*establishing connection with ip=" + neighborip + " port=" + neighborport);
+                });
                 System.out.println("*establishing connection with ip=" + neighborip + " port=" + neighborport);
                 socket = new Socket(neighborip, neighborport);
 
@@ -71,7 +78,9 @@ public class PortConnectionEstablish extends Thread {
                     p.setStreams(objectInputStream, objectOutputStream);
 
                     p.setconnectionEstablished(true);
-                    VirtualRouter.buffer.appendText("*connection is established at port " + myport + " with neighb = " + neighborhostname + " , " + neighborport);
+//                    strings.add("*connection is established at port " + myport + " with neighb = " + neighborhostname + " , " + neighborport);
+//                    VirtualRouter.printToScreen(strings);
+//                    strings.clear();
                     System.out.println("*connection is established at port " + myport + " with neighb = " + neighborhostname + " , " + neighborport);
                     rt.addEntry(neighborip, neighborhostname, new RoutingTableKey(neighborip, neighborhostname), neighborport, 1, myport, p, true, false);
 

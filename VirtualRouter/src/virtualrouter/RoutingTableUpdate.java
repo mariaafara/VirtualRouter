@@ -10,6 +10,7 @@ import sharedPackage.RoutingTableKey;
 import java.io.ObjectOutputStream;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -29,16 +30,22 @@ public class RoutingTableUpdate extends Thread {
     int recievedport;
     String hostname;
     Port myPP;
+    ArrayList<String> strings;
 
     public RoutingTableUpdate(RoutingTable recievedroutingtable, String hostname, int myport, ObjectOutputStream oos, RoutingTable rt, Port myPP) {
-  VirtualRouter.buffer.appendText("routing table update initialized constructor");
-        VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
+
+//          strings = new ArrayList<String>();
+//        strings.add("routing table update initialized constructor");
+//         VirtualRouter.printToScreen(strings);
+//               strings.clear();
+
+        //  VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
         this.recievedroutingtable = recievedroutingtable;
         this.myport = myport;
         this.oos = oos;
         this.rt = rt;
         this.hostname = hostname;
-        this.myPP=myPP;
+        this.myPP = myPP;
     }
 
     /*
@@ -96,7 +103,7 @@ public class RoutingTableUpdate extends Thread {
                         //nexthop
                         RoutingTableKey nextipHost = rt.getNextipHost(myport);
 
-                        rt.updateEntry(destAddress.getIp(), destAddress.getHostname(), nextipHost, recievedport,p, 1 + pair.getValue().cost);
+                        rt.updateEntry(destAddress.getIp(), destAddress.getHostname(), nextipHost, recievedport, p, 1 + pair.getValue().cost);
 
                         isUpdated = true;
 
@@ -124,7 +131,7 @@ public class RoutingTableUpdate extends Thread {
                         if (entry.getValue().cost == 1) {
                             //new RoutingTableSend(oos, rt).start();
                             myPP.write(rt);
-                            rt.printTable("Sending to port "+ entry.getValue().getNextHop() +"from port "+entry.getValue().getPort());
+                            rt.printTable("Sending to port " + entry.getValue().getNextHop() + "from port " + entry.getValue().getPort());
                         }
                     }
 

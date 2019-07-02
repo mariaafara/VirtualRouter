@@ -24,9 +24,8 @@ import java.util.Map;
  */
 public class RoutingTable implements Serializable {
 
-    
     HashMap<RoutingTableKey, RoutingTableInfo> routingEntries;
-
+    ArrayList<String> strings;
     //transient krmel ma ynb3to lobjects manon serilizable kmn 
     transient final Object lockRoutingTable = new Object();
     transient final Object lockPortconxs = new Object();
@@ -34,7 +33,7 @@ public class RoutingTable implements Serializable {
 
     public RoutingTable() {
 
-       
+        strings = new ArrayList<String>();
 
         routingEntries = new HashMap<>();
         this.myObjDate = LocalTime.now();
@@ -324,52 +323,53 @@ public class RoutingTable implements Serializable {
             LocalTime myDate = this.myObjDate;
 
             System.out.println("in print table ");
-            Platform.runLater(new Runnable() {
+
+            Iterator< HashMap.Entry< RoutingTableKey, RoutingTableInfo>> routingEntriesIterator = routingEntries.entrySet().iterator();
+
+            String destAddress, nextipHost;
+            // VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
+            strings.add("\n|-------------------------------------------------------------------------------------------------------------------|");
+            //VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
+            strings.add(" " + hint + "--Last updated " + myDate + "" + "");
+
+            strings.add("|-------------------------------------------------------------------------------------------------------------------|");
+            //  VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
+            strings.add("Dest Network\t\tnext ip-Host\t\tCost\t\tmyport\t\tnextPort\t\tActivated\t\tEstablished");
+            // VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
+            strings.add("|-------------------------------------------------------------------------------------------------------------------|");
+            // VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
+
+            while (routingEntriesIterator.hasNext()) {
+
+                HashMap.Entry<RoutingTableKey, RoutingTableInfo> pair = (HashMap.Entry<RoutingTableKey, RoutingTableInfo>) routingEntriesIterator.next();
+
+                destAddress = pair.getKey().getIp().getHostAddress() + "-" + pair.getKey().getHostname();
+                nextipHost = pair.getValue().getNextipHost().getIp().getHostAddress() + "-" + pair.getValue().getNextipHost().getHostname();
+
+                RoutingTableInfo destForwardingInfo = (RoutingTableInfo) pair.getValue();
+
+                strings.add("" + destAddress + "\t"
+                        +//bs ntb3 linet address btbi3to 3m berj3 forword slash bas destAddress.getHostName() 3m trj3 aw2et msln one.one.one.
+                        "" + nextipHost + "\t\t"
+                        + destForwardingInfo.cost + "\t\t"
+                        + "  " + destForwardingInfo.nextHop + "\t\t"
+                        + "  " + destForwardingInfo.port + "\t\t\t"
+                        + "  " + destForwardingInfo.activated + "\t\t"
+                        + "  " + destForwardingInfo.established + "\t");
+                // routerInterface.append(System.getProperty("line.separator"));
+           
+            }
+            strings.add("|-------------------------------------------------------------------------------------------------------------------|\n\n");
+
+           Platform.runLater(new Runnable() {
 
                 @Override
                 public void run() {
-                    Iterator< HashMap.Entry< RoutingTableKey, RoutingTableInfo>> routingEntriesIterator = routingEntries.entrySet().iterator();
 
-                    String destAddress, nextipHost;
-                     VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
-                    VirtualRouter.buffer.appendText("\n|-----------------------------------------------------------------------------------------------------------------|");
-                    VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
-                    VirtualRouter.buffer.appendText(" " + hint + "--Last updated " + myDate + "" + "\n");
-
-                    VirtualRouter.buffer.appendText("|-----------------------------------------------------------------------------------------------------------------|");
-                    VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
-                    VirtualRouter.buffer.appendText("Dest Network\t\tnext ip-Host\t\tCost\t\tmyport\t\tnextPort\t\tActivated\t\tEstablished");
-                    VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
-                    VirtualRouter.buffer.appendText("|-----------------------------------------------------------------------------------------------------------------|");
-                    VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
-
-                    while (routingEntriesIterator.hasNext()) {
-
-                        HashMap.Entry<RoutingTableKey, RoutingTableInfo> pair = (HashMap.Entry<RoutingTableKey, RoutingTableInfo>) routingEntriesIterator.next();
-
-                        destAddress = pair.getKey().getIp().getHostAddress() + "-" + pair.getKey().getHostname();
-                        nextipHost = pair.getValue().getNextipHost().getIp().getHostAddress() + "-" + pair.getValue().getNextipHost().getHostname();
-
-                        RoutingTableInfo destForwardingInfo = (RoutingTableInfo) pair.getValue();
-
-                        VirtualRouter.buffer.appendText("" + destAddress + "\t");//bs ntb3 linet address btbi3to 3m berj3 forword slash bas destAddress.getHostName() 3m trj3 aw2et msln one.one.one.
-
-                        VirtualRouter.buffer.appendText("" + nextipHost + "\t\t");
-                        VirtualRouter.buffer.appendText(destForwardingInfo.cost + "\t\t");
-
-                        VirtualRouter.buffer.appendText("  " + destForwardingInfo.nextHop + "\t\t");
-
-                        VirtualRouter.buffer.appendText("  " + destForwardingInfo.port + "\t\t\t");
-
-                        VirtualRouter.buffer.appendText("  " + destForwardingInfo.activated + "\t\t");
-
-                        VirtualRouter.buffer.appendText("  " + destForwardingInfo.established + "\t\n");
-                        // routerInterface.append(System.getProperty("line.separator"));
+                    for (int i = 0; i < strings.size(); i++) {
+                        VirtualRouter.buffer.appendText(strings.get(i) + "\n");
                     }
-                    VirtualRouter.buffer.appendText("|-----------------------------------------------------------------------------------------------------------------|");
-                    VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
-                    VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
-
+                    strings.clear();
                 }
             });
         }

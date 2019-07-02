@@ -8,8 +8,10 @@ package virtualrouter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 
 /**
  *
@@ -30,12 +32,18 @@ public class RoutingTableRecieve extends Thread {
     private String hostname;
     Object recievedObject;
     Port myPp;
+    ArrayList<String> strings;
 
     public RoutingTableRecieve(Object recievedObject, int port, String hostname, ObjectInputStream ois, ObjectOutputStream oos, RoutingTable rt, Port myPp) {
+        strings = new ArrayList<String>();
+        System.out.println("routing table recieve initialized");
 
-        //     System.out.println("routing table recieve initialized");
-        VirtualRouter.buffer.appendText("routing table recieve initialized constructor");
-        VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
+//        strings.add("routing table recieve initialized constructor");
+//        VirtualRouter.printToScreen(strings);
+//        strings.clear();
+        Platform.runLater(() -> {
+            VirtualRouter.buffer.appendText("routing table recieve initialized");
+        });
         this.port = port;
         this.hostname = hostname;
         this.ois = ois;
@@ -57,7 +65,7 @@ public class RoutingTableRecieve extends Thread {
             if (i == 0) {
                 i++;
                 try {
-                 
+
                     myPp.write(rt);
 
                 } catch (IOException ex) {

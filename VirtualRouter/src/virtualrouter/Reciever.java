@@ -13,8 +13,10 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import sharedPackage.Packet;
 import sharedPackage.RoutingTableKey;
 
@@ -37,7 +39,7 @@ public class Reciever extends Thread {
     String neighhostname;
     String myhostname;
     Port myPortt;
-
+    ArrayList<String> strings;
     boolean canReceive = true;
 //    public Reciever(InetAddress neighip, String myname, int myport, ObjectInputStream ois, ObjectOutputStream oos, RoutingTable rt) {
 //
@@ -52,8 +54,15 @@ public class Reciever extends Thread {
 //    }
 
     public Reciever(InetAddress neighip, String neighhostname, int neighport, int myport, String myhostname, ObjectInputStream ois, ObjectOutputStream oos, RoutingTable rt, Port myPortt) {
-        VirtualRouter.buffer.appendText("*reciever initialized");
-        VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
+        strings = new ArrayList<String>();
+
+//       strings.add("*reciever initialized");
+//        VirtualRouter.printToScreen(strings);
+//               strings.clear();
+        Platform.runLater(() -> {
+            VirtualRouter.buffer.appendText("*reciever initialized");
+        });
+        //VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
         System.out.println("*reciever initialized");
         this.myport = myport;
         this.ois = ois;
@@ -88,31 +97,41 @@ public class Reciever extends Thread {
 
                 //  System.out.println("*recieved object =" + recievedObject);
                 if (recievedObject instanceof RoutingTable) {
-                    VirtualRouter.buffer.appendText("*recieved routing table");
-                    VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
+                    strings.add("*recieved routing table");
+                    VirtualRouter.printToScreen(strings);
+                    strings.clear();
+                    // VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
                     System.out.println("*recieved routing table");
                     if (canReceive) {
                         if (rt.isEstablishedEntry(neighip, neighhostname)) {
 
-                            VirtualRouter.buffer.appendText("entry established");
-                            VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
+                            strings.add("entry established");
+                            VirtualRouter.printToScreen(strings);
+                            strings.clear();
+                            //   VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
 
                             new RoutingTableRecieve(recievedObject, myport, myhostname, ois, oos, rt, myPortt).start();
 
                         } else {
-                            VirtualRouter.buffer.appendText("Discarding routing table 1st else");
-                            VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
+                            strings.add("Discarding routing table 1st else");
+                            VirtualRouter.printToScreen(strings);
+                            strings.clear();
+                            // VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
                             System.out.println("Discarding routing table");
                         }
                     } else {
-                        VirtualRouter.buffer.appendText("Discarding routing table 2nd else");
-                        VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
+                        strings.add("Discarding routing table 2nd else");
+                        VirtualRouter.printToScreen(strings);
+                        strings.clear();
+                        //VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
                         System.out.println("Discarding routing table");
                     }
                 } else if (recievedObject instanceof FailedNode) {
                     //lzm nt2kad hon iza lzm lrouting protocol kmen bdo ykoun established awla 
-                    VirtualRouter.buffer.appendText("Recieved a failed node");
-                    VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
+                    strings.add("Recieved a failed node");
+                    VirtualRouter.printToScreen(strings);
+                    strings.clear();
+                    // VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
                     System.out.print("*recieved a failed node");
                     FailedNode fn = (FailedNode) recievedObject;
                     System.out.println("\n*" + fn.toString());
@@ -134,7 +153,9 @@ public class Reciever extends Thread {
                                 System.out.println("*From             =" + p.header.getSourceAddress() + ":" + p.header.getSourceHostname());
 
                             } else {
-                                VirtualRouter.buffer.appendText("Forwarding packet");
+                                strings.add("Forwarding packet");
+                                VirtualRouter.printToScreen(strings);
+                                strings.clear();
 
                                 System.out.println("*forwarding packet");
                                 ///b3tiha l ip wl host name  bdel get !!!!!
@@ -182,7 +203,7 @@ public class Reciever extends Thread {
     }
 
     public void stopRecieving() {
-        VirtualRouter.buffer.appendText("Stoped Recieving at port " + myport);
+        strings.add("Stoped Recieving at port " + myport);
 
         System.out.println("\n*stoped Recieving at port " + myport);
         this.stop();

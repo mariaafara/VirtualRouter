@@ -6,8 +6,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 
 /**
  * This class listens on given port for incoming connection
@@ -26,14 +28,19 @@ public class PortConnectionWait extends Thread {
     private Reciever reciever;
     private String myhostname;
     // public ObservaleStringBuffer routerInterface;
+    ArrayList<String> strings;
 
     public PortConnectionWait(String myhostname, int myport, Port p, RoutingTable rt) {
-
+        strings = new ArrayList<String>();
         try {
             //Creating server socket
             //  routerInterface = RouterSimulation.buffer;
-            VirtualRouter.buffer.appendText("*port " + myport + " waiting for a conx");
-            VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
+//            strings.add("*port " + myport + " waiting for a conx");
+//            VirtualRouter.printToScreen(strings);
+//            strings.clear();
+            Platform.runLater(() -> {
+                VirtualRouter.buffer.appendText("*port " + myport + " waiting for a conx");
+            });
             System.out.println("*port " + myport + " waiting for a conx");
             serversocket = new ServerSocket(myport);
             this.p = p;
