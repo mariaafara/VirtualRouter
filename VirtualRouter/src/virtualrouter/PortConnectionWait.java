@@ -27,17 +27,11 @@ public class PortConnectionWait extends Thread {
     RoutingTable rt;
     private Reciever reciever;
     private String myhostname;
-    // public ObservaleStringBuffer routerInterface;
-    ArrayList<String> strings;
-
+ 
     public PortConnectionWait(String myhostname, int myport, Port p, RoutingTable rt) {
-        strings = new ArrayList<String>();
+    
         try {
-            //Creating server socket
-            //  routerInterface = RouterSimulation.buffer;
-//            strings.add("*port " + myport + " waiting for a conx");
-//            VirtualRouter.printToScreen(strings);
-//            strings.clear();
+
             Platform.runLater(() -> {
                 VirtualRouter.buffer.appendText("*port " + myport + " waiting for a conx");
             });

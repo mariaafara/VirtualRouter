@@ -28,8 +28,7 @@ public class Header implements Serializable, Cloneable {
     String headerCheksum;
     InetAddress sourceAddress;
     InetAddress destinationAddress;
-    //int portSource;
-    // int portDestination;
+
     String destinationHostname, sourceHostname;
     
     public Header(int Identification, int TTL, InetAddress sourceAddress, InetAddress destinationAddress, String sourceHostname, String destinationHostname) {//, int portSource, int portDestination
@@ -40,10 +39,10 @@ public class Header implements Serializable, Cloneable {
         this.TTL = TTL;
         this.sourceAddress = sourceAddress;
         this.destinationAddress = destinationAddress;
-      //  this.portSource = portSource;
+    
         this.destinationHostname = destinationHostname;
         this.sourceHostname = sourceHostname;
-        //  this.portDestination = portDestination;
+      
 
     }
     
@@ -74,10 +73,7 @@ public class Header implements Serializable, Cloneable {
     public String getDestinationHostname() {
         return destinationHostname;
     }
-//
-//    public int getPortDestination() {
-//        return portDestination;
-//    }
+
 
     public String getSourceHostname() {
         return sourceHostname;
@@ -106,14 +102,7 @@ public class Header implements Serializable, Cloneable {
     public InetAddress getDestinationAddress() {
         return destinationAddress;
     }
-//    
-//    public int getPortSource() {
-//        return portSource;
-//    }
 
-//    public int getPortDestination() {
-//        return portDestination;
-//    }
     public Header clone() throws CloneNotSupportedException {
         return (Header) super.clone();
     }

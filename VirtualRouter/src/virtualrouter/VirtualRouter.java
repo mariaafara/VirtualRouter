@@ -33,8 +33,7 @@ import javafx.stage.Stage;
  * @author maria afara
  */
 public class VirtualRouter extends Application {
-//ArrayList<String> strings;
-//    public static ObservaleStringBuffer buffer;
+
 
     public static TextArea buffer;
 //192.168.182.1
@@ -61,7 +60,7 @@ public class VirtualRouter extends Application {
             @Override
             public void handle(ActionEvent t) {
                 try {
-                   // ArrayList<String> strings = new ArrayList<String>();
+                  
                     Registry registry = LocateRegistry.createRegistry(Integer.parseInt(txtRegistryPort.getText()));//1099
                     router = new Router(txtHostname.getText());
                     registry.rebind(txtHostname.getText(), router);
@@ -70,11 +69,6 @@ public class VirtualRouter extends Application {
                     // Process.Start("path/to/your/file")
                     primaryStage.setTitle("Router " + router.getHostname());
                 
-//                    for (int i = 0; i < 350; i++) {
-//                        strings.add("-"+i + "\n");
-//                    }
-//                    VirtualRouter.printToScreen(strings);
-
                 } catch (RemoteException ex) {
                     Logger.getLogger(Router.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (UnknownHostException ex) {
@@ -93,19 +87,6 @@ public class VirtualRouter extends Application {
         primaryStage.show();
     }
 
-    public static void printToScreen(ArrayList<String> strings) {
-//        Platform.runLater(new Runnable() {
-//
-//            @Override
-//            public void run() {
-
-                for (int i = 0; i < strings.size(); i++) {
-                    buffer.appendText(strings.get(i) + "\n");
-                }
-//            }
-//
-//        });
-    }
 
     /**
      * @param args the command line arguments

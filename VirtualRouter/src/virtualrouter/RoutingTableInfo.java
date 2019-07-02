@@ -29,7 +29,7 @@ public class RoutingTableInfo implements Serializable {
         this.portclass = portclass;
         this.activated = activated;
         this.established = established;
-        this.nextipHost = nextipHost;//new RoutingTableKey(InetAddress.getLocalHost(), nextHostname);
+        this.nextipHost = nextipHost;
     }
 //next ipHost //mtl nexthop => rtKey
 

@@ -34,12 +34,7 @@ public class RoutingTableUpdate extends Thread {
 
     public RoutingTableUpdate(RoutingTable recievedroutingtable, String hostname, int myport, ObjectOutputStream oos, RoutingTable rt, Port myPP) {
 
-//          strings = new ArrayList<String>();
-//        strings.add("routing table update initialized constructor");
-//         VirtualRouter.printToScreen(strings);
-//               strings.clear();
 
-        //  VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
         this.recievedroutingtable = recievedroutingtable;
         this.myport = myport;
         this.oos = oos;
@@ -95,7 +90,7 @@ public class RoutingTableUpdate extends Thread {
 
                     //"Cost for this destination in my routing table is "  destCost
                     //"Cost for this destination in received routing table is "  pair.getValue().cost
-                    // !!! BDO TOZBITT
+                
                     if (destCost > (1 + pair.getValue().cost)) {
                         //which is smaller than my cost for the destination
                         Port p = rt.getPortClass(myport);

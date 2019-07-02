@@ -48,20 +48,6 @@ public class RoutingService extends Thread {
             }
         }
 
-        //sar kel port 3ndo sender w reciever
-        //allow to recieve objects at each port
-//        for (HashMap.Entry<String, RoutingTableInfo> entry : routingTable.routingEntries.entrySet()) {
-//            System.out.println("*in RoutingService in hashmap loop ");
-//            //fina bala lcondition kermel bel awal bs neighbors mwjudin bl table
-//            if (entry.getValue().cost == 1) {
-//
-//                System.out.println("*socket in reciever local= " + entry.getValue().portclass.getSocket().getLocalPort() + " port=" + entry.getValue().portclass.getSocket().getPort());
-//
-//                System.out.println("*run reciever for the port " + entry.getKey());
-//
-//                new Reciever(entry.getKey(), entry.getValue().port, entry.getValue().portclass.getOis(), entry.getValue().portclass.getOos(), routingTable).start();
-//            }
-//        }
         routingTableBroadcast = new RoutingTableBroadcast(routingTable);
         routingTableBroadcast.start();
         System.out.println("\n*start broadcast");

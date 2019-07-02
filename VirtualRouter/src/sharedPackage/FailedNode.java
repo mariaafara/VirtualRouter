@@ -36,11 +36,7 @@ public class FailedNode implements Serializable{
         this.Destination=Destination;
         this.myKey=myKey;
     }
-//       public FailedNode(RoutingTableKey nextiphost, RoutingTableKey myiphost) {
-//        this.nextiphost=nextiphost;
-//        this.myipHost=myipHost;
-//    }
-//    
+
     public RoutingTableKey getDestination(){
         return Destination;
     }

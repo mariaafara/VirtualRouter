@@ -50,9 +50,7 @@ public class PortConnectionEstablish extends Thread {
         if (!p.isconnectionEstablished()) {
 
             try {
-//                strings.add("*establishing connection with ip=" + neighborip + " port=" + neighborport);
-//                VirtualRouter.printToScreen(strings);
-//                strings.clear();
+
                 Platform.runLater(() -> {
                     VirtualRouter.buffer.appendText("*establishing connection with ip=" + neighborip + " port=" + neighborport);
                 });
@@ -62,8 +60,6 @@ public class PortConnectionEstablish extends Thread {
                 //System.out.println("*socket : myport " + socket.getLocalPort() + " destport " + socket.getPort());
                 ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
 
-                ///////hye hon lmshkleee
-                //////
                 objectOutputStream.writeObject(new Neighbor(InetAddress.getLocalHost(), myhostname, myport));
 
                 //System.out.println("*sending my self as a neighbor to ip=" + InetAddress.getLocalHost() + " port=" + myport);
@@ -78,15 +74,10 @@ public class PortConnectionEstablish extends Thread {
                     p.setStreams(objectInputStream, objectOutputStream);
 
                     p.setconnectionEstablished(true);
-//                    strings.add("*connection is established at port " + myport + " with neighb = " + neighborhostname + " , " + neighborport);
-//                    VirtualRouter.printToScreen(strings);
-//                    strings.clear();
+
                     System.out.println("*connection is established at port " + myport + " with neighb = " + neighborhostname + " , " + neighborport);
                     rt.addEntry(neighborip, neighborhostname, new RoutingTableKey(neighborip, neighborhostname), neighborport, 1, myport, p, true, false);
 
-                    ///sar jehez yst2bel 
-                    //lneigh name hon bs krmel locally tssing bs b3den bdo ysir ip
-                    //   System.out.println("\n*before initialize reciever at port " + myport + "\n");
                     reciever = new Reciever(neighborip, neighborhostname, neighborport, myport, myhostname, p.getOis(), p.getOos(), rt, p);
                     reciever.start();
                     p.setReciever(reciever);
@@ -95,7 +86,7 @@ public class PortConnectionEstablish extends Thread {
                     //   System.out.println("\n*neig name " + neighborip + "," + neighborport + "\n");
                     rt.printTable("--after add true--");
                 } else {
-                    //rt.addEntry(ip, port, 1 ,myport, p, true);
+         
                     rt.addEntry(neighborip, neighborhostname, new RoutingTableKey(neighborip, neighborhostname), neighborport, 1, myport, p, false, false);
 
                     System.out.println("*waiting a connection from " + neighborport);

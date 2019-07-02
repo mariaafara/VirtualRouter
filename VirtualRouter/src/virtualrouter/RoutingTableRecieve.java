@@ -38,9 +38,6 @@ public class RoutingTableRecieve extends Thread {
         strings = new ArrayList<String>();
         System.out.println("routing table recieve initialized");
 
-//        strings.add("routing table recieve initialized constructor");
-//        VirtualRouter.printToScreen(strings);
-//        strings.clear();
         Platform.runLater(() -> {
             VirtualRouter.buffer.appendText("routing table recieve initialized");
         });
@@ -75,9 +72,9 @@ public class RoutingTableRecieve extends Thread {
 
             recieveport = rt.getNextHop(port);
 
-            //System.out.print("\n");
-            routingTable.printTable("Recieved from " + recieveport + " at port " + port);
-            //System.out.println("\n");
+           
+            routingTable.printTable(" Recieved from " + recieveport + " at port " + port);
+          
 
             // Check if this routing table's object needs to be updated
             new RoutingTableUpdate(routingTable, hostname, port, oos, rt, myPp).start();

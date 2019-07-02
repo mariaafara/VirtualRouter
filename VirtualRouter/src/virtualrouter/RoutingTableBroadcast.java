@@ -49,9 +49,8 @@ public class RoutingTableBroadcast extends Thread {
 //l is established y3ne he lentry mn domn dekhlin bl routing protocol (le n3tet ka network bl configurations)
                     //     System.out.println("*in broadcast before  RoutingTableSend");
                     if (entry.getValue().cost == 1 && entry.getValue().portclass.isconnectionEstablished() && entry.getValue().isEstablished()) {
-                    //    new RoutingTableSend(entry.getValue().portclass.getOos(), routingTable).start();
                         //      System.out.println("*in broadcast after RoutingTableSend ");
-                      //  entry.getValue().portclass.getOos().reset();
+                     
                       entry.getValue().portclass.write(routingTable);
                      routingTable.printTable("Sending to port "+ entry.getValue().getNextHop() +"from port "+entry.getValue().getPort());
                        
