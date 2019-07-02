@@ -52,7 +52,7 @@ public class RoutingTableBroadcast extends Thread {
                         //      System.out.println("*in broadcast after RoutingTableSend ");
                      
                       entry.getValue().portclass.write(routingTable);
-                     routingTable.printTable("Sending to port "+ entry.getValue().getNextHop() +"from port "+entry.getValue().getPort());
+                     routingTable.printTable("**Sending** to port "+ entry.getValue().getNextHop() +" from port "+entry.getValue().getPort());
                        
                     }
 

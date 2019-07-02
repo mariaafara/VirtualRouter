@@ -12,6 +12,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.UnknownHostException;
+import java.rmi.AccessException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -51,6 +53,7 @@ public class VirtualRouter extends Application {
     Stage stage;
     String filename;
     String hostname;
+    Registry registry;
 
     @Override
     public void start(Stage primaryStage) {
@@ -76,10 +79,14 @@ public class VirtualRouter extends Application {
             public void handle(ActionEvent t) {
                 try {
                     if (btnConnect.getText().equals("Connect")) {
-                        Registry registry = LocateRegistry.createRegistry(Integer.parseInt(txtRegistryPort.getText()));//1099
+                        registry = LocateRegistry.createRegistry(Integer.parseInt(txtRegistryPort.getText()));//1099
                         router = new Router(txtHostname.getText());
                         hostname = txtHostname.getText();
                         registry.rebind(txtHostname.getText(), router);
+                        Platform.runLater(() -> {
+                            buffer.appendText("Router creaated and rebind to the registry with its name\n");
+                        });
+                        
                         txtHostname.setDisable(true);
                         txtRegistryPort.setDisable(true);
                         // Process.Start("path/to/your/file")
@@ -87,11 +94,20 @@ public class VirtualRouter extends Application {
                         btnConnect.setText("Disconnect");
                         btnExport.setDisable(false);
                     } else if (btnConnect.getText().equals("Disconnect")) {
+
                         router.disconnet();
+                        registry.unbind(hostname);
+
+                        Platform.runLater(() -> {
+                            buffer.appendText("Disconnected\n");
+                        });
+
                     }
                 } catch (RemoteException ex) {
                     Logger.getLogger(Router.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (UnknownHostException ex) {
+                    Logger.getLogger(VirtualRouter.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (NotBoundException ex) {
                     Logger.getLogger(VirtualRouter.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }

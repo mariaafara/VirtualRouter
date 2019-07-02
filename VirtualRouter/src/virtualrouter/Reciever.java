@@ -82,7 +82,7 @@ public class Reciever extends Thread {
                 if (recievedObject instanceof RoutingTable) {
 
                     Platform.runLater(() -> {
-                        VirtualRouter.buffer.appendText("*recieved routing table" + "\n");
+                        VirtualRouter.buffer.appendText("Recieved routing table" + "\n");
                     });
                     // VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
                     System.out.println("*recieved routing table");

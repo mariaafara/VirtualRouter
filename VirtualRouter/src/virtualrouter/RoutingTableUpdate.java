@@ -122,14 +122,14 @@ public class RoutingTableUpdate extends Thread {
                 //If yes send updates to all neighbors
                 if (isUpdated) {
                     System.out.print("\n");
-                    rt.printTable("After Update");
+                    rt.printTable("**Updated**");
                     System.out.print("\n");
                     for (HashMap.Entry<RoutingTableKey, RoutingTableInfo> entry : rt.routingEntries.entrySet()) {
 
                         if (entry.getValue().cost == 1) {
                             //new RoutingTableSend(oos, rt).start();
                             myPP.write(rt);
-                            rt.printTable("Sending to port " + entry.getValue().getNextHop() + "from port " + entry.getValue().getPort());
+                            rt.printTable("**Sending** the updated RT to port " + entry.getValue().getNextHop() + " from port " + entry.getValue().getPort());
                         }
                     }
 
