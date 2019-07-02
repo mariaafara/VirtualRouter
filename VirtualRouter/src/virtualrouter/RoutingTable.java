@@ -321,56 +321,49 @@ public class RoutingTable implements Serializable {
         // creating iterator for HashMap 
         synchronized (this) {
             LocalTime myDate = this.myObjDate;
-
+            String string;
             System.out.println("in print table ");
 
             Iterator< HashMap.Entry< RoutingTableKey, RoutingTableInfo>> routingEntriesIterator = routingEntries.entrySet().iterator();
 
             String destAddress, nextipHost;
             // VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
-            strings.add("\n|-------------------------------------------------------------------------------------------------------------------|");
-            //VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
-            strings.add(" " + hint + "--Last updated " + myDate + "" + "");
+            string = "\n|--------------------------------------------------------------------------------------------------------------------|\n"
+                    + " " + hint + "--Last updated " + myDate + "\n"
+                    + "|--------------------------------------------------------------------------------------------------------------------|\n"
+                    + "Dest Network\t\tnext ip-Host\t\tCost\t\tmyport\t\tnextPort\t\tActivated\t\tEstablished\n"
+                    + "|--------------------------------------------------------------------------------------------------------------------|\n";
 
-            strings.add("|-------------------------------------------------------------------------------------------------------------------|");
-            //  VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
-            strings.add("Dest Network\t\tnext ip-Host\t\tCost\t\tmyport\t\tnextPort\t\tActivated\t\tEstablished");
-            // VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
-            strings.add("|-------------------------------------------------------------------------------------------------------------------|");
-            // VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
+            Platform.runLater(() -> {
+                VirtualRouter.buffer.appendText(string);
+
+            });
 
             while (routingEntriesIterator.hasNext()) {
-
+                String string2;
                 HashMap.Entry<RoutingTableKey, RoutingTableInfo> pair = (HashMap.Entry<RoutingTableKey, RoutingTableInfo>) routingEntriesIterator.next();
 
                 destAddress = pair.getKey().getIp().getHostAddress() + "-" + pair.getKey().getHostname();
                 nextipHost = pair.getValue().getNextipHost().getIp().getHostAddress() + "-" + pair.getValue().getNextipHost().getHostname();
 
                 RoutingTableInfo destForwardingInfo = (RoutingTableInfo) pair.getValue();
+//bs ntb3 linet address btbi3to 3m berj3 forword slash bas destAddress.getHostName() 3m trj3 aw2et msln one.one.one.
 
-                strings.add("" + destAddress + "\t"
-                        +//bs ntb3 linet address btbi3to 3m berj3 forword slash bas destAddress.getHostName() 3m trj3 aw2et msln one.one.one.
-                        "" + nextipHost + "\t\t"
+                string2 = "" + destAddress + "\t"
+                        + "" + nextipHost + "\t\t"
                         + destForwardingInfo.cost + "\t\t"
                         + "  " + destForwardingInfo.nextHop + "\t\t"
                         + "  " + destForwardingInfo.port + "\t\t\t"
                         + "  " + destForwardingInfo.activated + "\t\t"
-                        + "  " + destForwardingInfo.established + "\t");
+                        + "  " + destForwardingInfo.established + "\t\n";
                 // routerInterface.append(System.getProperty("line.separator"));
-           
+                Platform.runLater(() -> {
+                    VirtualRouter.buffer.appendText(string2);
+
+                });
             }
-            strings.add("|-------------------------------------------------------------------------------------------------------------------|\n\n");
-
-           Platform.runLater(new Runnable() {
-
-                @Override
-                public void run() {
-
-                    for (int i = 0; i < strings.size(); i++) {
-                        VirtualRouter.buffer.appendText(strings.get(i) + "\n");
-                    }
-                    strings.clear();
-                }
+           Platform.runLater(() -> {
+                VirtualRouter.buffer.appendText("|--------------------------------------------------------------------------------------------------------------------|\n\n");
             });
         }
     }

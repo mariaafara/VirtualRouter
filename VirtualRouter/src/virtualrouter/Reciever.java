@@ -97,40 +97,49 @@ public class Reciever extends Thread {
 
                 //  System.out.println("*recieved object =" + recievedObject);
                 if (recievedObject instanceof RoutingTable) {
-                    strings.add("*recieved routing table");
-                    VirtualRouter.printToScreen(strings);
-                    strings.clear();
+//                    strings.add("*recieved routing table");
+//                    VirtualRouter.printToScreen(strings);
+//                    strings.clear();
+                    Platform.runLater(() -> {
+                        VirtualRouter.buffer.appendText("*recieved routing table");
+                    });
                     // VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
                     System.out.println("*recieved routing table");
                     if (canReceive) {
                         if (rt.isEstablishedEntry(neighip, neighhostname)) {
-
-                            strings.add("entry established");
-                            VirtualRouter.printToScreen(strings);
-                            strings.clear();
+//
+//                            strings.add("entry established");
+//                            VirtualRouter.printToScreen(strings);
+//                            strings.clear();
                             //   VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
 
                             new RoutingTableRecieve(recievedObject, myport, myhostname, ois, oos, rt, myPortt).start();
 
                         } else {
-                            strings.add("Discarding routing table 1st else");
-                            VirtualRouter.printToScreen(strings);
-                            strings.clear();
+//                            strings.add("Discarding routing table 1st else");
+//                            VirtualRouter.printToScreen(strings);
+//                            strings.clear();
+                            Platform.runLater(() -> {
+                                VirtualRouter.buffer.appendText("*Discarding routing table 1st else");
+                            });
                             // VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
                             System.out.println("Discarding routing table");
                         }
                     } else {
-                        strings.add("Discarding routing table 2nd else");
-                        VirtualRouter.printToScreen(strings);
-                        strings.clear();
+//                        strings.add("Discarding routing table 2nd else");
+//                        VirtualRouter.printToScreen(strings);
+//                        strings.clear();
+                        Platform.runLater(() -> {
+                            VirtualRouter.buffer.appendText("*Discarding routing table 2st else");
+                        });
                         //VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
                         System.out.println("Discarding routing table");
                     }
                 } else if (recievedObject instanceof FailedNode) {
                     //lzm nt2kad hon iza lzm lrouting protocol kmen bdo ykoun established awla 
-                    strings.add("Recieved a failed node");
-                    VirtualRouter.printToScreen(strings);
-                    strings.clear();
+//                    strings.add("Recieved a failed node");
+//                    VirtualRouter.printToScreen(strings);
+//                    strings.clear();
                     // VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
                     System.out.print("*recieved a failed node");
                     FailedNode fn = (FailedNode) recievedObject;
@@ -153,9 +162,9 @@ public class Reciever extends Thread {
                                 System.out.println("*From             =" + p.header.getSourceAddress() + ":" + p.header.getSourceHostname());
 
                             } else {
-                                strings.add("Forwarding packet");
-                                VirtualRouter.printToScreen(strings);
-                                strings.clear();
+//                                strings.add("Forwarding packet");
+//                                VirtualRouter.printToScreen(strings);
+//                                strings.clear();
 
                                 System.out.println("*forwarding packet");
                                 ///b3tiha l ip wl host name  bdel get !!!!!
