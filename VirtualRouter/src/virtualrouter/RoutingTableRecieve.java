@@ -29,18 +29,20 @@ public class RoutingTableRecieve extends Thread {
     private int port;
     private String hostname;
     Object recievedObject;
-Port myPp;
+    Port myPp;
 
     public RoutingTableRecieve(Object recievedObject, int port, String hostname, ObjectInputStream ois, ObjectOutputStream oos, RoutingTable rt, Port myPp) {
 
-   //     System.out.println("routing table recieve initialized");
+        //     System.out.println("routing table recieve initialized");
+        VirtualRouter.buffer.appendText("routing table recieve initialized constructor");
+        VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
         this.port = port;
-        this.hostname=hostname;
+        this.hostname = hostname;
         this.ois = ois;
         this.oos = oos;
         this.rt = rt;
         this.recievedObject = recievedObject;
-        this.myPp=myPp;
+        this.myPp = myPp;
 
     }
 
@@ -55,14 +57,9 @@ Port myPp;
             if (i == 0) {
                 i++;
                 try {
-                    //System.out.println("");
-                    //   new RoutingTableSend(oos, rt).start();
+                 
                     myPp.write(rt);
-//                try {
-//                    oos.reset();
-//                } catch (IOException ex) {
-//                    Logger.getLogger(RoutingTableRecieve.class.getName()).log(Level.SEVERE, null, ex);
-//                }
+
                 } catch (IOException ex) {
                     Logger.getLogger(RoutingTableRecieve.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -70,12 +67,12 @@ Port myPp;
 
             recieveport = rt.getNextHop(port);
 
-            System.out.print("\n");
+            //System.out.print("\n");
             routingTable.printTable("Recieved from " + recieveport + " at port " + port);
-            System.out.println("\n");
+            //System.out.println("\n");
 
             // Check if this routing table's object needs to be updated
-            new RoutingTableUpdate(routingTable,hostname, port,oos, rt, myPp).start();
+            new RoutingTableUpdate(routingTable, hostname, port, oos, rt, myPp).start();
 
         }
 

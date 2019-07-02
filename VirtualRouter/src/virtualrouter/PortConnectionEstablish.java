@@ -47,13 +47,16 @@ public class PortConnectionEstablish extends Thread {
         if (!p.isconnectionEstablished()) {
 
             try {
+                VirtualRouter.buffer.appendText("*establishing connection with ip=" + neighborip + " port=" + neighborport);
 
-                System.out.println("*establishing connection with ip=" + neighborhostname + " port=" + neighborport);
+                System.out.println("*establishing connection with ip=" + neighborip + " port=" + neighborport);
                 socket = new Socket(neighborip, neighborport);
 
                 //System.out.println("*socket : myport " + socket.getLocalPort() + " destport " + socket.getPort());
                 ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
 
+                ///////hye hon lmshkleee
+                //////
                 objectOutputStream.writeObject(new Neighbor(InetAddress.getLocalHost(), myhostname, myport));
 
                 //System.out.println("*sending my self as a neighbor to ip=" + InetAddress.getLocalHost() + " port=" + myport);
@@ -68,6 +71,7 @@ public class PortConnectionEstablish extends Thread {
                     p.setStreams(objectInputStream, objectOutputStream);
 
                     p.setconnectionEstablished(true);
+                    VirtualRouter.buffer.appendText("*connection is established at port " + myport + " with neighb = " + neighborhostname + " , " + neighborport);
                     System.out.println("*connection is established at port " + myport + " with neighb = " + neighborhostname + " , " + neighborport);
                     rt.addEntry(neighborip, neighborhostname, new RoutingTableKey(neighborip, neighborhostname), neighborport, 1, myport, p, true, false);
 

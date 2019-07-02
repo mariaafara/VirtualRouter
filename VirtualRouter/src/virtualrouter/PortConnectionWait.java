@@ -32,8 +32,8 @@ public class PortConnectionWait extends Thread {
         try {
             //Creating server socket
             //  routerInterface = RouterSimulation.buffer;
-            VirtualRouter.buffer.append("*port " + myport + " waiting for a conx");
-            VirtualRouter.buffer.append(System.getProperty("line.separator"));
+            VirtualRouter.buffer.appendText("*port " + myport + " waiting for a conx");
+            VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
             System.out.println("*port " + myport + " waiting for a conx");
             serversocket = new ServerSocket(myport);
             this.p = p;

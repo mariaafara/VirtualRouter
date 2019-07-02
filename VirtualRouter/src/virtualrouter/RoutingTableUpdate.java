@@ -31,7 +31,8 @@ public class RoutingTableUpdate extends Thread {
     Port myPP;
 
     public RoutingTableUpdate(RoutingTable recievedroutingtable, String hostname, int myport, ObjectOutputStream oos, RoutingTable rt, Port myPP) {
-
+  VirtualRouter.buffer.appendText("routing table update initialized constructor");
+        VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
         this.recievedroutingtable = recievedroutingtable;
         this.myport = myport;
         this.oos = oos;
@@ -123,7 +124,7 @@ public class RoutingTableUpdate extends Thread {
                         if (entry.getValue().cost == 1) {
                             //new RoutingTableSend(oos, rt).start();
                             myPP.write(rt);
-                            rt.printTable("Sending");
+                            rt.printTable("Sending to port "+ entry.getValue().getNextHop() +"from port "+entry.getValue().getPort());
                         }
                     }
 

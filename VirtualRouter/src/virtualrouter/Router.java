@@ -15,7 +15,7 @@ import java.util.Scanner;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import sharedPackage.ObservaleStringBuffer;
+//import sharedPackage.ObservaleStringBuffer;
 
 /**
  * Router Class
@@ -47,10 +47,11 @@ public class Router extends UnicastRemoteObject implements ConfigurationInterfac
     ArrayList<RoutingTableKey> networks;
     RoutingService routingService;
 
-    public static ObservaleStringBuffer routerInterface;
+    //public static ObservaleStringBuffer routerInterface;
 
     public Router(String hostname) throws RemoteException, UnknownHostException {
         super();
+        System.out.println("my local host ------> " + InetAddress.getLocalHost());
 
         networks = new ArrayList<RoutingTableKey>();
 
@@ -62,12 +63,13 @@ public class Router extends UnicastRemoteObject implements ConfigurationInterfac
 
         this.hostname = hostname;
 
-        routerInterface = VirtualRouter.buffer;
-//        routerInterface.append(System.getProperty("line.separator"));
+     //   routerInterface = VirtualRouter.buffer;
+//        routerInterface.appendText(System.getProperty("line.separator"));
     }
 
+    @Override
     public String getHostname() {
-        return hostname;
+        return this.hostname;
     }
 
     @Override
@@ -79,8 +81,8 @@ public class Router extends UnicastRemoteObject implements ConfigurationInterfac
     public void initializeConnection(int port, InetAddress neighboraddress, String neighborhostname, int neighborport) {
         synchronized (this) {
             if (!portConxs.containsPort(port)) {
-                routerInterface.append("*This port does not exists");
-                routerInterface.append(System.getProperty("line.separator"));
+                VirtualRouter.buffer.appendText("*This port does not exists");
+                VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
                 //  System.out.println("*This port does not exists");
                 return;
             }
@@ -92,8 +94,8 @@ public class Router extends UnicastRemoteObject implements ConfigurationInterfac
     public void initializePort(int port) {
         synchronized (this) {
             if (portConxs.containsPort(port)) {
-                routerInterface.append("*This port exists");
-                routerInterface.append(System.getProperty("line.separator"));
+                VirtualRouter.buffer.appendText("*This port exists");
+                VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
 //                System.out.println("*This port exists");
                 return;
             }
@@ -105,15 +107,16 @@ public class Router extends UnicastRemoteObject implements ConfigurationInterfac
         }
 
     }
+    int k = 0;
 
     @Override
     public void initializeRoutingProtocol(ArrayList<RoutingTableKey> networks) {
 
         routingService = new RoutingService(routingTable, networks);
         routingService.start();
-        routerInterface.append("*initializeRoutingProtocol");
-        routerInterface.append(System.getProperty("line.separator"));
-//        System.out.println("*initializeRoutingProtocol");
+        VirtualRouter.buffer.appendText("initializeRoutingProtocol " + k);
+        VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
+        System.out.println("*initializeRoutingProtocol");
     }
 
     public InetAddress getIpAddress() {
@@ -233,5 +236,4 @@ public class Router extends UnicastRemoteObject implements ConfigurationInterfac
 
     }
 
-    
 }
