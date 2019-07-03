@@ -142,55 +142,9 @@ public class Router extends UnicastRemoteObject implements ConfigurationInterfac
         this.ipAddress = ipAddress;
     }
 
-    public void run() {
 
-        Scanner scn = new Scanner(System.in);
-        System.out.println("enter name of router.............");
-        String name = scn.nextLine();
-        setHostname(name);
-        System.out.println("enter nbr ports..................");
-        int nb = Integer.parseInt(scn.nextLine());
-
-        for (int i = 0; i < nb; i++) {
-            System.out.println("enter a port.................");
-            initializePort(Integer.parseInt(scn.nextLine()));
-        }
-        for (int i = 0; i < nb; i++) {
-
-            try {
-                System.out.println("enter to establish connection....(myport:neighname:nexthop).......");
-                String line = scn.nextLine();
-                StringTokenizer st = new StringTokenizer(line, ":");
-                int myport = Integer.parseInt(st.nextToken());
-                String neighname = st.nextToken();
-                int nexthop = Integer.parseInt(st.nextToken());
-
-                initializeConnection(myport, InetAddress.getLocalHost(), neighname, nexthop);
-            } catch (UnknownHostException ex) {
-                Logger.getLogger(Router.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
-        }
-
-        if (scn.nextLine().equals("start")) {
-            while (true) {
-
-                System.out.println("enter a network host name:");
-                String nextHost = scn.nextLine();
-                if (nextHost.equals("end")) {
-                    System.out.println("end");
-                    //      initializeRoutingProtocol(networks);
-                    break;
-                }
-                System.out.println("adding" + nextHost);
-                //       networks.add(new RoutingTableKey(InetAddress.getLocalHost(), nextHost));
-
-            }
-
-        }
-        System.out.println("enter 'stop' to stop working");
-
-        if (scn.nextLine().equals("stop")) {
+    public void disconnet() {
+        if (establishedneighbors.size() > 0) {
             FailedNode mefn = new FailedNode(new RoutingTableKey(ipAddress, hostname), new RoutingTableKey(ipAddress, hostname));
 
             for (HashMap.Entry<RoutingTableKey, RoutingTableInfo> entry2 : routingTable.routingEntries.entrySet()) {
@@ -217,11 +171,11 @@ public class Router extends UnicastRemoteObject implements ConfigurationInterfac
                     }
                 }
             }
-            //////fi hon big problem 
-            ///// bnsbe lal connectios lmftu7in ben l tafet wll neighbors le ela 
-//step 1
-            routingService.routingTableBroadcast.stopBroadcast();
 
+            routingService.routingTableBroadcast.stopBroadcast();
+            Platform.runLater(() -> {
+                VirtualRouter.buffer.appendText("Stopping broadcasting\n");
+            });
             for (HashMap.Entry<RoutingTableKey, RoutingTableInfo> entry2 : routingTable.routingEntries.entrySet()) {
 
                 if (entry2.getValue().cost == 1) {
@@ -231,6 +185,9 @@ public class Router extends UnicastRemoteObject implements ConfigurationInterfac
                         ///////////////
 
                         reciver.stopRecieving();
+                        Platform.runLater(() -> {
+                            VirtualRouter.buffer.appendText("Closing cnx with " + entry2.getKey() + "\n");
+                        });
 
                         System.out.print("\n*closing cnx with " + entry2.getKey());
                         entry2.getValue().portclass.getSocket().close();
@@ -240,62 +197,6 @@ public class Router extends UnicastRemoteObject implements ConfigurationInterfac
                     } catch (IOException ex) {
                         Logger.getLogger(Router.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                }
-            }
-            //stopRouter();
-            //  this.stop();
-
-        }
-
-    }
-
-    public void disconnet() {
-        FailedNode mefn = new FailedNode(new RoutingTableKey(ipAddress, hostname), new RoutingTableKey(ipAddress, hostname));
-
-        for (HashMap.Entry<RoutingTableKey, RoutingTableInfo> entry2 : routingTable.routingEntries.entrySet()) {
-
-            if (entry2.getValue().cost == 1) {
-                try {
-                    /////hon/////
-                    //lezm eb3t lkel jar eno m7eet lkel                        
-
-                    System.out.print("\n*broadcast ");
-                    ///hyda be 2lb tene loop
-                    int i = 0;
-                    for (HashMap.Entry<RoutingTableKey, RoutingTableInfo> entry3 : routingTable.routingEntries.entrySet()) {
-                        FailedNode newfn = new FailedNode(entry3.getKey(), new RoutingTableKey(ipAddress, hostname));
-                        if (i == 0) {
-                            entry2.getValue().portclass.getOos().writeObject(mefn);
-                        }
-                        i++;
-                        entry2.getValue().portclass.getOos().writeObject(newfn);
-                    }
-
-                } catch (IOException ex) {
-                    Logger.getLogger(Router.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }
-
-        routingService.routingTableBroadcast.stopBroadcast();
-
-        for (HashMap.Entry<RoutingTableKey, RoutingTableInfo> entry2 : routingTable.routingEntries.entrySet()) {
-
-            if (entry2.getValue().cost == 1) {
-                try {
-                    ///////////////stop recieving then stop cnxs (close socket)
-                    Reciever reciver = entry2.getValue().portclass.reciever;
-                    ///////////////
-
-                    reciver.stopRecieving();
-
-                    System.out.print("\n*closing cnx with " + entry2.getKey());
-                    entry2.getValue().portclass.getSocket().close();
-                    entry2.getValue().portclass.portConnectionWait.stopWaitingForConnection();
-                    //stoping reciving on the adjacent ports where the cnx between them is stoped(finished) due to the failure in one node
-
-                } catch (IOException ex) {
-                    Logger.getLogger(Router.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }

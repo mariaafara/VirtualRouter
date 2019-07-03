@@ -5,12 +5,20 @@
  */
 package virtualrouter;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
@@ -20,6 +28,7 @@ import java.rmi.registry.Registry;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -84,9 +93,16 @@ public class VirtualRouter extends Application {
                         hostname = txtHostname.getText();
                         registry.rebind(txtHostname.getText(), router);
                         Platform.runLater(() -> {
-                            buffer.appendText("Router created and rebinded to the registry with its name "+hostname+"\n");
+                            buffer.appendText("Router created and rebinded to the registry with its name " + hostname + "\n");
                         });
-                        
+                        getAddress();
+//                        Platform.runLater(() -> {
+//                            try {
+//                                buffer.appendText("ip is" + getAddress());
+//                            } catch (IOException ex) {
+//                                Logger.getLogger(VirtualRouter.class.getName()).log(Level.SEVERE, null, ex);
+//                            }
+//                        });
                         txtHostname.setDisable(true);
                         txtRegistryPort.setDisable(true);
                         // Process.Start("path/to/your/file")
@@ -104,10 +120,18 @@ public class VirtualRouter extends Application {
 
                     }
                 } catch (RemoteException ex) {
+//                    Platform.runLater(() -> {
+//                        buffer.appendText("Sorry this port" + txtRegistryPort.getText() + " is taken\n");
+//                    });
                     Logger.getLogger(Router.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (UnknownHostException ex) {
                     Logger.getLogger(VirtualRouter.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (NotBoundException ex) {
+                     Platform.runLater(() -> {
+                        buffer.appendText("Sorry this port" + txtRegistryPort.getText() + " is taken\n");
+                    });
+                    Logger.getLogger(VirtualRouter.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IOException ex) {
                     Logger.getLogger(VirtualRouter.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -126,7 +150,7 @@ public class VirtualRouter extends Application {
         hostnameConnectionbox.getChildren().addAll(txtHostname, txtRegistryPort, btnConnect, btnExport);
         root.getChildren().addAll(hostnameConnectionbox, buffer);
         //buffer.appendText("kakjhas\nsdfdghj\nadsafdsgdhj\nadsafdsgf\n");
-        primaryStage.setScene(new Scene(root, 600, 400));
+        primaryStage.setScene(new Scene(root, 650, 400));
 
         primaryStage.setTitle("Router");
 
@@ -136,6 +160,32 @@ public class VirtualRouter extends Application {
     /**
      * @param args the command line arguments
      */
+    public void getAddress() throws MalformedURLException, IOException {
+        String ip = null;
+        try {
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            while (interfaces.hasMoreElements()) {
+                NetworkInterface iface = interfaces.nextElement();
+                // filters out 127.0.0.1 and inactive interfaces
+
+                if (iface.isLoopback() || !iface.isUp() || iface.isVirtual() || iface.isPointToPoint()) {
+                    continue;
+                }
+
+                Enumeration<InetAddress> addresses = iface.getInetAddresses();
+                while (addresses.hasMoreElements()) {
+                    InetAddress addr = addresses.nextElement();
+                    ip = addr.getHostAddress();
+                    System.out.println(iface.getDisplayName() + " " + ip);
+                }
+            }
+        } catch (SocketException e) {
+            throw new RuntimeException(e);
+        }
+
+        //return InetAddress.getByName(ip);
+    }
+
     public void extractFeedback() throws FileNotFoundException, IOException {
         if (buffer.getText() == "") {
             Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
