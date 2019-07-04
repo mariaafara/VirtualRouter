@@ -248,13 +248,7 @@ public class Router extends UnicastRemoteObject implements ConfigurationInterfac
 
     @Override
     public InetAddress getLocalHost() throws RemoteException {
-        InetAddress ip = null;
-        try {
-            ip = InetAddress.getLocalHost();
-        } catch (UnknownHostException ex) {
-            Logger.getLogger(Router.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return ip;
+        return this.ipAddress;
     }
 
     @Override
