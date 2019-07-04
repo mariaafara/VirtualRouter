@@ -60,7 +60,7 @@ public class PortConnectionEstablish extends Thread {
                 //System.out.println("*socket : myport " + socket.getLocalPort() + " destport " + socket.getPort());
                 ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
 
-                objectOutputStream.writeObject(new Neighbor(InetAddress.getLocalHost(), myhostname, myport));
+                objectOutputStream.writeObject(new Neighbor(Router.ipAddress, myhostname, myport));
 
                 //System.out.println("*sending my self as a neighbor to ip=" + InetAddress.getLocalHost() + " port=" + myport);
                 ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());

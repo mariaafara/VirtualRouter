@@ -41,7 +41,7 @@ public class Router extends UnicastRemoteObject implements ConfigurationInterfac
     static String currentHostIpAddress = null;
     String hostname;
 
-    InetAddress ipAddress;
+    static InetAddress ipAddress;
 
     public RoutingTable routingTable;
 
