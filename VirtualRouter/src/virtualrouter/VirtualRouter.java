@@ -39,6 +39,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
@@ -74,7 +75,7 @@ public class VirtualRouter extends Application {
         buffer.setEditable(false);
         // textArea.textProperty().bind(buffer);
         buffer.setWrapText(true);
-
+   Label lblip = new Label();
         root.setVgrow(buffer, Priority.ALWAYS);
         TextField txtRegistryPort = new TextField();
         txtRegistryPort.setPrefWidth(120);
@@ -91,6 +92,7 @@ public class VirtualRouter extends Application {
                         registry = LocateRegistry.createRegistry(Integer.parseInt(txtRegistryPort.getText()));//1099
                         router = new Router(txtHostname.getText());
                         hostname = txtHostname.getText();
+                           lblip.setText(router.ipAddress+"");
                         registry.rebind(txtHostname.getText(), router);
                         Platform.runLater(() -> {
                             buffer.appendText("Router created and rebinded to the registry with its name " + hostname + "\n");
@@ -147,7 +149,7 @@ public class VirtualRouter extends Application {
                 }
             }
         });
-        hostnameConnectionbox.getChildren().addAll(txtHostname, txtRegistryPort, btnConnect, btnExport);
+        hostnameConnectionbox.getChildren().addAll(txtHostname, txtRegistryPort, btnConnect, btnExport,lblip);
         root.getChildren().addAll(hostnameConnectionbox, buffer);
         //buffer.appendText("kakjhas\nsdfdghj\nadsafdsgdhj\nadsafdsgf\n");
         primaryStage.setScene(new Scene(root, 650, 400));

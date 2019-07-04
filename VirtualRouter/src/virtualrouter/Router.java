@@ -6,10 +6,13 @@ import sharedPackage.FailedNode;
 import java.io.IOException;
 import sharedPackage.RoutingTableKey;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.StringTokenizer;
@@ -35,6 +38,7 @@ import javafx.application.Platform;
  */
 public class Router extends UnicastRemoteObject implements ConfigurationInterface {
 
+    static String currentHostIpAddress = null;
     String hostname;
 
     InetAddress ipAddress;
@@ -59,11 +63,52 @@ public class Router extends UnicastRemoteObject implements ConfigurationInterfac
         portConxs = new PortConxs();
 
         routingTable = new RoutingTable();
+        if (InetAddress.getByName(getCurrentEnvironmentNetworkIp()) == null) {
+            this.ipAddress = InetAddress.getLocalHost();
+        } else {
+            this.ipAddress = InetAddress.getByName(getCurrentEnvironmentNetworkIp()); //InetAddress.getLocalHost();
 
-        this.ipAddress = InetAddress.getLocalHost();
-
+        }
         this.hostname = hostname;
 
+    }
+
+    public String getCurrentEnvironmentNetworkIp() {
+
+        if (currentHostIpAddress == null) {
+            Enumeration<NetworkInterface> netInterfaces = null;
+            try {
+                netInterfaces = NetworkInterface.getNetworkInterfaces();
+
+                while (netInterfaces.hasMoreElements()) {
+                    NetworkInterface ni = netInterfaces.nextElement();
+                    //System.out.println(ni.getName());
+                    if (!ni.getName().contains("wlan")) {
+                        continue;
+                    }
+                    Enumeration<InetAddress> address = ni.getInetAddresses();
+                    while (address.hasMoreElements()) {
+                        InetAddress addr = address.nextElement();
+                        //                      log.debug("Inetaddress:" + addr.getHostAddress() + " loop? " + addr.isLoopbackAddress() + " local? "
+                        //                            + addr.isSiteLocalAddress());
+                        if (!addr.isLoopbackAddress() && addr.isSiteLocalAddress()
+                                && !(addr.getHostAddress().indexOf(":") > -1)) {
+                            //System.out.println(addr);
+                            currentHostIpAddress = addr.getHostAddress();
+                            return currentHostIpAddress;
+                        }
+                    }
+                }
+                if (currentHostIpAddress == null) {
+                    currentHostIpAddress = "127.0.0.1";
+                }
+
+            } catch (SocketException e) {
+//                log.error("Somehow we have a socket error acquiring the host IP... Using loopback instead...");
+                currentHostIpAddress = "127.0.0.1";
+            }
+        }
+        return currentHostIpAddress;
     }
 
     @Override
@@ -141,7 +186,6 @@ public class Router extends UnicastRemoteObject implements ConfigurationInterfac
     public void setIpAddress(InetAddress ipAddress) {
         this.ipAddress = ipAddress;
     }
-
 
     public void disconnet() {
         if (establishedneighbors.size() > 0) {
