@@ -19,6 +19,7 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import static virtualrouter.VirtualRouter.currentHostIpAddress;
 //import sharedPackage.ObservaleStringBuffer;
 
 /**
@@ -38,10 +39,9 @@ import javafx.application.Platform;
  */
 public class Router extends UnicastRemoteObject implements ConfigurationInterface {
 
-    static String currentHostIpAddress = null;
     String hostname;
 
-    static InetAddress ipAddress;
+    public static InetAddress ipAddress;
 
     public RoutingTable routingTable;
 
@@ -53,22 +53,32 @@ public class Router extends UnicastRemoteObject implements ConfigurationInterfac
     ArrayList<RoutingTableKey> establishedneighbors;
 
     RoutingService routingService;
+    static String currentHostIpAddress = null;
 
     public Router(String hostname) throws RemoteException, UnknownHostException {
         super();
+
         System.out.println("my local host ------> " + InetAddress.getLocalHost());
 
         neighbors = new ArrayList<RoutingTableKey>();
         establishedneighbors = new ArrayList<RoutingTableKey>();
         portConxs = new PortConxs();
-
+        //  this.ipAddress = ip;
         routingTable = new RoutingTable();
         if (InetAddress.getByName(getCurrentEnvironmentNetworkIp()) == null) {
-            this.ipAddress = InetAddress.getLocalHost();
+
+            this.ipAddress = InetAddress.getByName("127.0.0.1");
+            System.out.println(this.ipAddress);
+            //bs he ma ha ytb3anow krml l2et wifi
+
         } else {
+
             this.ipAddress = InetAddress.getByName(getCurrentEnvironmentNetworkIp()); //InetAddress.getLocalHost();
+            System.out.println("hon taba3");
+            System.out.println(this.ipAddress);
 
         }
+
         this.hostname = hostname;
 
     }
@@ -95,6 +105,7 @@ public class Router extends UnicastRemoteObject implements ConfigurationInterfac
                                 && !(addr.getHostAddress().indexOf(":") > -1)) {
                             //System.out.println(addr);
                             currentHostIpAddress = addr.getHostAddress();
+                            System.out.println(currentHostIpAddress);
                             return currentHostIpAddress;
                         }
                     }

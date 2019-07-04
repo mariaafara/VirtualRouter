@@ -13,6 +13,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.NetworkInterface;
@@ -49,8 +50,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-//import sharedPackage.ObservaleStringBuffer;
 
+//import sharedPackage.ObservaleStringBuffer;
 /**
  *
  * @author maria afara
@@ -64,9 +65,11 @@ public class VirtualRouter extends Application {
     String filename;
     String hostname;
     Registry registry;
+    static String currentHostIpAddress = null;
+    InetAddress ip;
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) throws UnknownHostException {
         stage = primaryStage;
         //  buffer = new ObservaleStringBuffer();
         VBox root = new VBox(2);
@@ -75,12 +78,12 @@ public class VirtualRouter extends Application {
         buffer.setEditable(false);
         // textArea.textProperty().bind(buffer);
         buffer.setWrapText(true);
-   Label lblip = new Label();
+        Label lblip = new Label();
         root.setVgrow(buffer, Priority.ALWAYS);
         TextField txtRegistryPort = new TextField();
         txtRegistryPort.setPrefWidth(120);
         TextField txtHostname = new TextField();
-
+    //    InetAddress localip = InetAddress.getLocalHost();;
         txtHostname.setPrefWidth(150);
         Button btnConnect = new Button("Connect");
         Button btnExport = new Button("Export Feedbacks");
@@ -90,14 +93,23 @@ public class VirtualRouter extends Application {
                 try {
                     if (btnConnect.getText().equals("Connect")) {
                         registry = LocateRegistry.createRegistry(Integer.parseInt(txtRegistryPort.getText()));//1099
+//                        if (InetAddress.getByName(getCurrentEnvironmentNetworkIp()) == null) {
+//                         ip = Inet4Address.getLocalHost();
+//                            System.out.println(" this.ipAddress w= " + Inet4Address.getLocalHost());
+//                        } else {
+//                            ip = InetAddress.getByName(getCurrentEnvironmentNetworkIp()); //InetAddress.getLocalHost();
+//                            System.out.println(" this.ipAddress l= " + InetAddress.getByName(getCurrentEnvironmentNetworkIp()));
+//                        }
+
                         router = new Router(txtHostname.getText());
                         hostname = txtHostname.getText();
-                           lblip.setText(router.ipAddress+"");
+
+                        lblip.setText("     " + router.getLocalHost() + "");
                         registry.rebind(txtHostname.getText(), router);
                         Platform.runLater(() -> {
                             buffer.appendText("Router created and rebinded to the registry with its name " + hostname + "\n");
                         });
-                        getAddress();
+
 //                        Platform.runLater(() -> {
 //                            try {
 //                                buffer.appendText("ip is" + getAddress());
@@ -129,11 +141,9 @@ public class VirtualRouter extends Application {
                 } catch (UnknownHostException ex) {
                     Logger.getLogger(VirtualRouter.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (NotBoundException ex) {
-                     Platform.runLater(() -> {
+                    Platform.runLater(() -> {
                         buffer.appendText("Sorry this port" + txtRegistryPort.getText() + " is taken\n");
                     });
-                    Logger.getLogger(VirtualRouter.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (IOException ex) {
                     Logger.getLogger(VirtualRouter.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -149,7 +159,7 @@ public class VirtualRouter extends Application {
                 }
             }
         });
-        hostnameConnectionbox.getChildren().addAll(txtHostname, txtRegistryPort, btnConnect, btnExport,lblip);
+        hostnameConnectionbox.getChildren().addAll(txtHostname, txtRegistryPort, btnConnect, btnExport, lblip);
         root.getChildren().addAll(hostnameConnectionbox, buffer);
         //buffer.appendText("kakjhas\nsdfdghj\nadsafdsgdhj\nadsafdsgf\n");
         primaryStage.setScene(new Scene(root, 650, 400));
@@ -162,30 +172,42 @@ public class VirtualRouter extends Application {
     /**
      * @param args the command line arguments
      */
-    public void getAddress() throws MalformedURLException, IOException {
-        String ip = null;
-        try {
-            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-            while (interfaces.hasMoreElements()) {
-                NetworkInterface iface = interfaces.nextElement();
-                // filters out 127.0.0.1 and inactive interfaces
+    public String getCurrentEnvironmentNetworkIp() {
 
-                if (iface.isLoopback() || !iface.isUp() || iface.isVirtual() || iface.isPointToPoint()) {
-                    continue;
+        if (currentHostIpAddress == null) {
+            Enumeration<NetworkInterface> netInterfaces = null;
+            try {
+                netInterfaces = NetworkInterface.getNetworkInterfaces();
+
+                while (netInterfaces.hasMoreElements()) {
+                    NetworkInterface ni = netInterfaces.nextElement();
+                    //System.out.println(ni.getName());
+                    if (!ni.getName().contains("wlan")) {
+                        continue;
+                    }
+                    Enumeration<InetAddress> address = ni.getInetAddresses();
+                    while (address.hasMoreElements()) {
+                        InetAddress addr = address.nextElement();
+                        //                      log.debug("Inetaddress:" + addr.getHostAddress() + " loop? " + addr.isLoopbackAddress() + " local? "
+                        //                            + addr.isSiteLocalAddress());
+                        if (!addr.isLoopbackAddress() && addr.isSiteLocalAddress()
+                                && !(addr.getHostAddress().indexOf(":") > -1)) {
+                            //System.out.println(addr);
+                            currentHostIpAddress = addr.getHostAddress();
+                            return currentHostIpAddress;
+                        }
+                    }
+                }
+                if (currentHostIpAddress == null) {
+                    currentHostIpAddress = "127.0.0.1";
                 }
 
-                Enumeration<InetAddress> addresses = iface.getInetAddresses();
-                while (addresses.hasMoreElements()) {
-                    InetAddress addr = addresses.nextElement();
-                    ip = addr.getHostAddress();
-                    System.out.println(iface.getDisplayName() + " " + ip);
-                }
+            } catch (SocketException e) {
+//                log.error("Somehow we have a socket error acquiring the host IP... Using loopback instead...");
+                currentHostIpAddress = "127.0.0.1";
             }
-        } catch (SocketException e) {
-            throw new RuntimeException(e);
         }
-
-        //return InetAddress.getByName(ip);
+        return currentHostIpAddress;
     }
 
     public void extractFeedback() throws FileNotFoundException, IOException {
