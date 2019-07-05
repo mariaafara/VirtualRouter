@@ -32,7 +32,7 @@ public class RoutingTableKey implements Serializable  {
 
     @Override
     public String toString() {
-        return  hostname + "-" + ip ;
+        return ip.getHostAddress() + "-" + hostname ;
     }
 
   
