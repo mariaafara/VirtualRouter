@@ -77,7 +77,16 @@ public class Reciever extends Thread {
                 //  System.out.println("\n\n"+ois.available()+"\n\n");
                 recievedObject = ois.readObject();
                 i++;
+                if (!canReceive) {
 
+                    Platform.runLater(() -> {
+
+                        VirtualRouter.buffer.appendText("Discarding recieved object" + "\n");
+                    });
+                    //VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
+                    System.out.println("Discarding recieved oobject");
+                    continue;
+                }
                 //  System.out.println("*recieved object =" + recievedObject);
                 if (recievedObject instanceof RoutingTable) {
 
@@ -86,37 +95,31 @@ public class Reciever extends Thread {
                     });
                     // VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
                     System.out.println("*recieved routing table");
-                    if (canReceive) {
-                        if (rt.isEstablishedEntry(neighip, neighhostname)) {
 
-                            new RoutingTableRecieve(recievedObject, myport, myhostname, ois, oos, rt, myPortt).start();
+                    if (rt.isEstablishedEntry(neighip, neighhostname)) {
 
-                        } else {
+                        new RoutingTableRecieve(recievedObject, myport, myhostname, ois, oos, rt, myPortt).start();
 
-                            Platform.runLater(() -> {
-                                VirtualRouter.buffer.appendText("Discarding routing table " + "\n");
-                            });
-                            // VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
-                            System.out.println("Discarding routing table");
-                        }
                     } else {
 
                         Platform.runLater(() -> {
-
-                            VirtualRouter.buffer.appendText("Discarding routing table" + "\n");
+                            VirtualRouter.buffer.appendText("Discarding routing table " + "\n");
                         });
-                        //VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
+                        // VirtualRouter.buffer.appendText(System.getProperty("line.separator"));
                         System.out.println("Discarding routing table");
                     }
-                } else if (recievedObject instanceof FailedNode) {
+
+                } else 
+                    ///tayeb honeee kmen lzm tkoun established aw la???
+                    if (recievedObject instanceof FailedNode) {
                     //lzm nt2kad hon iza lzm lrouting protocol kmen bdo ykoun established awla 
                     Platform.runLater(() -> {
-                        VirtualRouter.buffer.appendText("Recieved Failed node" + "\n");
+                        VirtualRouter.buffer.appendText("Recieved Failed " + "\n");
                     });
                     System.out.print("*recieved a failed node");
                     FailedNode fn = (FailedNode) recievedObject;
                     System.out.println("\n*" + fn.toString());
-                    new FailedNodeRecieve(recievedObject, rt, new RoutingTableKey(InetAddress.getLocalHost(), myhostname), canReceive).start();
+                    new FailedNodeRecieve(recievedObject, rt, new RoutingTableKey(Router.ipAddress, myhostname), canReceive).start();
 
                 } else if (recievedObject instanceof Packet) {
                     Packet p = (Packet) recievedObject;
@@ -128,7 +131,13 @@ public class Reciever extends Thread {
                         p.header.TTL = ttl;
                         if (ttl > 0) {
                             ///iza huwe zeto ana and and lhostname  !!!!!!
-                            if (p.header.getDestinationAddress().equals(Inet4Address.getLocalHost().toString()) && p.header.getDestinationHostname().equals(myhostname)) {
+                                Platform.runLater(() -> {
+                                    VirtualRouter.buffer.appendText(p.header.getDestinationAddress() +"\t"+ p.header.getDestinationHostname()+"\n");
+                                });
+                              Platform.runLater(() -> {
+                                    VirtualRouter.buffer.appendText(p.header.getDestinationAddress().equals(Router.ipAddress.getHostAddress()) +"\t"+ p.header.getDestinationHostname().equals(myhostname)+"\n");
+                                });
+                            if (p.header.getDestinationAddress().equals(Router.ipAddress) && p.header.getDestinationHostname().equals(myhostname)) {
                                 messageReceived = p.Message;
                                 Platform.runLater(() -> {
                                     VirtualRouter.buffer.appendText("----------------------------------------------------------------\n");

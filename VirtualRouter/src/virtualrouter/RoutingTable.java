@@ -25,15 +25,13 @@ import java.util.Map;
 public class RoutingTable implements Serializable {
 
     HashMap<RoutingTableKey, RoutingTableInfo> routingEntries;
-    ArrayList<String> strings;
+ 
     //transient krmel ma ynb3to lobjects manon serilizable kmn 
     transient final Object lockRoutingTable = new Object();
     transient final Object lockPortconxs = new Object();
     LocalTime myObjDate;
 
     public RoutingTable() {
-
-        strings = new ArrayList<String>();
 
         routingEntries = new HashMap<>();
         this.myObjDate = LocalTime.now();

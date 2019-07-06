@@ -104,7 +104,7 @@ public class VirtualRouter extends Application {
                         router = new Router(txtHostname.getText());
                         hostname = txtHostname.getText();
 
-                        lblip.setText("     " + router.getLocalHost() + "");
+                        lblip.setText("     " + Router.ipAddress + "");
                         registry.rebind(txtHostname.getText(), router);
                         Platform.runLater(() -> {
                             buffer.appendText("Router created and rebinded to the registry with its name " + hostname + "\n");
