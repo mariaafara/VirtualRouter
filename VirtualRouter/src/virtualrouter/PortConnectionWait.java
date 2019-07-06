@@ -37,6 +37,7 @@ public class PortConnectionWait extends Thread {
             });
             System.out.println("*port " + myport + " waiting for a conx");
             serversocket = new ServerSocket(myport);
+            
             this.p = p;
             this.myport = myport;
             this.myhostname = myhostname;
@@ -68,7 +69,7 @@ public class PortConnectionWait extends Thread {
 
                 //neighbor.neighborPort is the next hop 
                 objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-
+                
                 if (rt.isExistandNotActive(neighbor.neighborAddress, neighbor.neighborname)) {
 
                     //  System.out.println("before activateEntry");
@@ -112,7 +113,7 @@ public class PortConnectionWait extends Thread {
             } catch (ClassNotFoundException ex) {
                 Logger.getLogger(PortConnectionWait.class.getName()).log(Level.SEVERE, null, ex);
             }
-
+   
         }
     }
 

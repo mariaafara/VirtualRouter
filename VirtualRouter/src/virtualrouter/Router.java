@@ -272,13 +272,13 @@ public class Router extends UnicastRemoteObject implements ConfigurationInterfac
         RoutingTableKey net = new RoutingTableKey(neghip, neighname);
         boolean isneighbor = false;
         for (RoutingTableKey neighbor : neighbors) {
-
+            
             if (net.equals(neighbor)) {
                 isneighbor = true;
-                //  buffer.append("--is neigh--");
+                break;
+                
             } else {
                 isneighbor = false;
-
             }
         }
         return isneighbor;

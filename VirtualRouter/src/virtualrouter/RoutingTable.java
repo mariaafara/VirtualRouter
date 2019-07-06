@@ -299,8 +299,10 @@ public class RoutingTable implements Serializable {
             boolean contains = false;
 
             RoutingTableKey ipHost = new RoutingTableKey(ip, hostname);
-
+            
             //   System.out.println("\n\n* @ and port "+ipPort.ip+" , "+ipPort.port);
+            System.out.println(ipHost.getIp()+"-"+ipHost.toString());
+            System.out.println(routingEntries.toString());
             if (routingEntries.containsKey(ipHost)) {
                 System.out.println("\n*" + ipHost.toString() + "  exist in routing table ");
             } else {
