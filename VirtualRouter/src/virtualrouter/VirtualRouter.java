@@ -5,29 +5,19 @@
  */
 package virtualrouter;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.Inet4Address;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.net.UnknownHostException;
-import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.logging.Level;
@@ -45,10 +35,8 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 //import sharedPackage.ObservaleStringBuffer;
@@ -71,19 +59,19 @@ public class VirtualRouter extends Application {
     @Override
     public void start(Stage primaryStage) throws UnknownHostException {
         stage = primaryStage;
-        //  buffer = new ObservaleStringBuffer();
+       
         VBox root = new VBox(2);
         HBox hostnameConnectionbox = new HBox();
         buffer = new TextArea();//for the feedbacks
         buffer.setEditable(false);
-        // textArea.textProperty().bind(buffer);
+        
         buffer.setWrapText(true);
         Label lblip = new Label();
         root.setVgrow(buffer, Priority.ALWAYS);
         TextField txtRegistryPort = new TextField();
         txtRegistryPort.setPrefWidth(120);
         TextField txtHostname = new TextField();
-    //    InetAddress localip = InetAddress.getLocalHost();;
+  
         txtHostname.setPrefWidth(150);
         Button btnConnect = new Button("Connect");
         Button btnExport = new Button("Export Feedbacks");
@@ -93,13 +81,6 @@ public class VirtualRouter extends Application {
                 try {
                     if (btnConnect.getText().equals("Connect")) {
                         registry = LocateRegistry.createRegistry(Integer.parseInt(txtRegistryPort.getText()));//1099
-//                        if (InetAddress.getByName(getCurrentEnvironmentNetworkIp()) == null) {
-//                         ip = Inet4Address.getLocalHost();
-//                            System.out.println(" this.ipAddress w= " + Inet4Address.getLocalHost());
-//                        } else {
-//                            ip = InetAddress.getByName(getCurrentEnvironmentNetworkIp()); //InetAddress.getLocalHost();
-//                            System.out.println(" this.ipAddress l= " + InetAddress.getByName(getCurrentEnvironmentNetworkIp()));
-//                        }
 
                         router = new Router(txtHostname.getText());
                         hostname = txtHostname.getText();
@@ -110,16 +91,9 @@ public class VirtualRouter extends Application {
                             buffer.appendText("Router created and rebinded to the registry with its name " + hostname + "\n");
                         });
 
-//                        Platform.runLater(() -> {
-//                            try {
-//                                buffer.appendText("ip is" + getAddress());
-//                            } catch (IOException ex) {
-//                                Logger.getLogger(VirtualRouter.class.getName()).log(Level.SEVERE, null, ex);
-//                            }
-//                        });
                         txtHostname.setDisable(true);
                         txtRegistryPort.setDisable(true);
-                        // Process.Start("path/to/your/file")
+               
                         primaryStage.setTitle("Router " + router.getHostname());
                         btnConnect.setText("Disconnect");
                         btnExport.setDisable(false);
@@ -134,9 +108,7 @@ public class VirtualRouter extends Application {
 
                     }
                 } catch (RemoteException ex) {
-//                    Platform.runLater(() -> {
-//                        buffer.appendText("Sorry this port" + txtRegistryPort.getText() + " is taken\n");
-//                    });
+                
                     Logger.getLogger(Router.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (UnknownHostException ex) {
                     Logger.getLogger(VirtualRouter.class.getName()).log(Level.SEVERE, null, ex);
@@ -149,19 +121,17 @@ public class VirtualRouter extends Application {
             }
         });
         btnExport.setDisable(true);
-        btnExport.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent t) {
-                try {
-                    extractFeedback();
-                } catch (IOException ex) {
-                    Logger.getLogger(VirtualRouter.class.getName()).log(Level.SEVERE, null, ex);
-                }
+        btnExport.setOnAction((ActionEvent t) -> {
+            try {
+                extractFeedback();
+            } catch (IOException ex) {
+                Logger.getLogger(VirtualRouter.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
         hostnameConnectionbox.getChildren().addAll(txtHostname, txtRegistryPort, btnConnect, btnExport, lblip);
         root.getChildren().addAll(hostnameConnectionbox, buffer);
-        //buffer.appendText("kakjhas\nsdfdghj\nadsafdsgdhj\nadsafdsgf\n");
+
+        
         primaryStage.setScene(new Scene(root, 650, 400));
 
         primaryStage.setTitle("Router");

@@ -52,7 +52,8 @@ public class FailedNodeRecieve extends Thread {
         for (HashMap.Entry<RoutingTableKey, RoutingTableInfo> entry2 : rt.routingEntries.entrySet()) {
             System.out.println("*now broadcasting");
             Platform.runLater(() -> {
-                VirtualRouter.buffer.appendText("Now broadcasting the delted entries \n");
+
+                VirtualRouter.buffer.appendText("Now broadcasting all the deleted entries \n");
             });
             if (entry2.getValue().cost == 1) {
                 try {

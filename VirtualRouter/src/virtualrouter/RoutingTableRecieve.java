@@ -37,10 +37,10 @@ public class RoutingTableRecieve extends Thread {
     public RoutingTableRecieve(Object recievedObject, int port, String hostname, ObjectInputStream ois, ObjectOutputStream oos, RoutingTable rt, Port myPp) {
         strings = new ArrayList<String>();
         System.out.println("routing table recieve initialized");
-
         Platform.runLater(() -> {
-            VirtualRouter.buffer.appendText("routing table recieve initialized");
+            VirtualRouter.buffer.appendText("Routing table recieve initialized");
         });
+
         this.port = port;
         this.hostname = hostname;
         this.ois = ois;
@@ -72,9 +72,7 @@ public class RoutingTableRecieve extends Thread {
 
             recieveport = rt.getNextHop(port);
 
-           
             routingTable.printTable(" **Recieved** from " + recieveport + " at port " + port);
-          
 
             // Check if this routing table's object needs to be updated
             new RoutingTableUpdate(routingTable, hostname, port, oos, rt, myPp).start();
