@@ -95,8 +95,9 @@ public class RoutingTableUpdate extends Thread {
                         recievedport = rt.getNextHop(myport);
                         //nexthop
                         RoutingTableKey nextipHost = rt.getNextipHost(myport);
-
-                        rt.updateEntry(destAddress.getIp(), destAddress.getHostname(), nextipHost, recievedport, p, 1 + pair.getValue().cost);
+                        
+//                        rt.updateEntry(destAddress.getIp(), destAddress.getHostname(), nextipHost, recievedport, p, 1 + pair.getValue().cost, myport);
+                          rt.updateEntry(destAddress.getIp(), destAddress.getHostname(), nextipHost, recievedport, myPP, 1 + pair.getValue().cost, myport);
                         Platform.runLater(() -> {
                             VirtualRouter.buffer.appendText("Updating " + destAddress + " entry learned from " + destAddress + "\n");
                         });
@@ -110,6 +111,7 @@ public class RoutingTableUpdate extends Thread {
                     Port p = rt.getPortClass(myport);
                     recievedport = rt.getNextHop(myport);
                     RoutingTableKey nextipHost = rt.getNextipHost(myport);
+                    //myPortt
                     rt.addEntry(destAddress, nextipHost, recievedport, pair.getValue().cost + 1, myport, p, true, true);
                     isUpdated = true;
                     //System.out.println(nextipHost);
