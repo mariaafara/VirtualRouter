@@ -109,9 +109,8 @@ public class Reciever extends Thread {
                         System.out.println("Discarding routing table");
                     }
 
-                } else 
-                    ///tayeb honeee kmen lzm tkoun established aw la???
-                    if (recievedObject instanceof FailedNode) {
+                } else ///tayeb honeee kmen lzm tkoun established aw la???
+                if (recievedObject instanceof FailedNode) {
                     //lzm nt2kad hon iza lzm lrouting protocol kmen bdo ykoun established awla 
                     Platform.runLater(() -> {
                         VirtualRouter.buffer.appendText("Recieved Failed " + "\n");
@@ -131,12 +130,12 @@ public class Reciever extends Thread {
                         p.header.TTL = ttl;
                         if (ttl >= 0) {
                             ///iza huwe zeto ana and and lhostname  !!!!!!
-                                Platform.runLater(() -> {
-                                    VirtualRouter.buffer.appendText(p.header.getDestinationAddress() +"\t"+ p.header.getDestinationHostname()+"\n");
-                                });
-                              Platform.runLater(() -> {
-                                    VirtualRouter.buffer.appendText(p.header.getDestinationAddress().equals(Router.ipAddress.getHostAddress()) +"\t"+ p.header.getDestinationHostname().equals(myhostname)+"\n");
-                                });
+                            Platform.runLater(() -> {
+                                VirtualRouter.buffer.appendText(p.header.getDestinationAddress() + "\t" + p.header.getDestinationHostname() + "\n");
+                            });
+                            Platform.runLater(() -> {
+                                VirtualRouter.buffer.appendText(p.header.getDestinationAddress().equals(Router.ipAddress.getHostAddress()) + "\t" + p.header.getDestinationHostname().equals(myhostname) + "\n");
+                            });
                             if (p.header.getDestinationAddress().equals(Router.ipAddress) && p.header.getDestinationHostname().equals(myhostname)) {
                                 messageReceived = p.Message;
                                 Platform.runLater(() -> {
@@ -156,7 +155,13 @@ public class Reciever extends Thread {
 
                             } else {
                                 Platform.runLater(() -> {
+                                    VirtualRouter.buffer.appendText("----------------------------------------------------------------\n");
+                                });
+                                Platform.runLater(() -> {
                                     VirtualRouter.buffer.appendText("Forwarding packet to " + p.header.getDestination().toString() + "\n");
+                                });
+                                Platform.runLater(() -> {
+                                    VirtualRouter.buffer.appendText("----------------------------------------------------------------\n");
                                 });
                                 System.out.println("*forwarding packet");
                                 ///b3tiha l ip wl host name  bdel get !!!!!
