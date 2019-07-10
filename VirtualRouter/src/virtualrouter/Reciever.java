@@ -129,7 +129,7 @@ public class Reciever extends Thread {
                         int ttl = p.header.getTTL();
                         ttl--;
                         p.header.TTL = ttl;
-                        if (ttl > 0) {
+                        if (ttl >= 0) {
                             ///iza huwe zeto ana and and lhostname  !!!!!!
                                 Platform.runLater(() -> {
                                     VirtualRouter.buffer.appendText(p.header.getDestinationAddress() +"\t"+ p.header.getDestinationHostname()+"\n");
