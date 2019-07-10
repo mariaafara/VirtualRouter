@@ -253,7 +253,7 @@ public class RoutingTable implements Serializable {
     /*
 	 * this method updates cost to a given destination and its next hop  int nxthopIp,
      */
-    public void updateEntry(InetAddress destNtwk, String desthostname, RoutingTableKey nextipHost, int nexthop, Port p, int cost) {
+    public void updateEntry(InetAddress destNtwk, String desthostname, RoutingTableKey nextipHost, int nexthop, Port p, int cost, int myPort) {
         synchronized (lockRoutingTable) {
             RoutingTableKey ipHost = new RoutingTableKey(destNtwk, desthostname);
             //    RoutingTableKey nextipHost = new RoutingTableKey(nextdestNtwk, nextdesthostname);
@@ -262,6 +262,7 @@ public class RoutingTable implements Serializable {
             this.routingEntries.get(ipHost).setNextipHost(nextipHost);
             this.routingEntries.get(ipHost).setPortclass(p);
             this.routingEntries.get(ipHost).setNextHop(nexthop);
+            this.routingEntries.get(ipHost).setPort(myPort);
         }
     }
 
