@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -55,6 +56,8 @@ public class PortConnectionEstablish extends Thread {
                     VirtualRouter.buffer.appendText("*establishing connection with ip=" + neighborip + " port=" + neighborport);
                 });
                 System.out.println("*establishing connection with ip=" + neighborip + " port=" + neighborport);
+                //     socket = new Socket();
+                //  socket.connect(new InetSocketAddress(neighborip, neighborport),1000);
                 socket = new Socket(neighborip, neighborport);
 
                 //System.out.println("*socket : myport " + socket.getLocalPort() + " destport " + socket.getPort());
@@ -86,7 +89,7 @@ public class PortConnectionEstablish extends Thread {
                     //   System.out.println("\n*neig name " + neighborip + "," + neighborport + "\n");
                     rt.printTable("--after add true--");
                 } else {
-         
+
                     rt.addEntry(neighborip, neighborhostname, new RoutingTableKey(neighborip, neighborhostname), neighborport, 1, myport, p, false, false);
 
                     System.out.println("*waiting a connection from " + neighborport);

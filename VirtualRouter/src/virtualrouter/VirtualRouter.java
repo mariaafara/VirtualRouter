@@ -80,6 +80,10 @@ public class VirtualRouter extends Application {
             public void handle(ActionEvent t) {
                 try {
                     if (btnConnect.getText().equals("Connect")) {
+                        
+                        
+                        
+                        
                         registry = LocateRegistry.createRegistry(Integer.parseInt(txtRegistryPort.getText()));//1099
 
                         router = new Router(txtHostname.getText());
