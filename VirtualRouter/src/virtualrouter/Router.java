@@ -271,12 +271,16 @@ public class Router extends UnicastRemoteObject implements ConfigurationInterfac
     public boolean checkNeighbor(InetAddress neghip, String neighname) throws RemoteException {
         RoutingTableKey net = new RoutingTableKey(neghip, neighname);
         boolean isneighbor = false;
+        System.out.println(neighbors.size() + "   " + neighbors.toString());
         for (RoutingTableKey neighbor : neighbors) {
-            
-            if (net.equals(neighbor)) {
+            System.out.println("net : " + net.toString() + "\n neigh: " + neighbor.toString() + "\n");
+
+            //    if (net.equals(neighbor)) {
+            if (net.getHostname().equals(neighbor.getHostname()) && net.getIp().equals(neighbor.getIp())) {
                 isneighbor = true;
+                System.out.println("True---net : " + net.toString() + "\n neigh: " + neighbor.toString() + "\n");
                 break;
-                
+
             } else {
                 isneighbor = false;
             }
@@ -287,12 +291,12 @@ public class Router extends UnicastRemoteObject implements ConfigurationInterfac
     @Override
     public boolean checkEstablishedNeighbor(InetAddress neghip, String neighname) throws RemoteException {
         RoutingTableKey net = new RoutingTableKey(neghip, neighname);
+
         boolean isestablishedalready = false;
         for (RoutingTableKey establishedneighbor : establishedneighbors) {
-            if (establishedneighbor.equals(net)) {
+            if (net.getHostname().equals(establishedneighbor.getHostname()) && net.getIp().equals(establishedneighbor.getIp())) {
                 //already established
                 isestablishedalready = true;
-
             }
 
         }

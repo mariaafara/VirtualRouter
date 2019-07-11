@@ -107,11 +107,10 @@ public class Header implements Serializable, Cloneable {
         return (Header) super.clone();
     }
     
-    @Override
+     @Override
     public String toString() {
-        return "Header{" + "Version=" + Version + ", DHTL=" + DHTL + ", TypeOfService=" + TypeOfService + ", totalLength=" + totalLength + ", Identification=" + Identification + ", moreFragment=" + moreFragment + ", TTL=" + TTL + ", Protocol=" + Protocol + ", headerCheksum=" + headerCheksum + ", sourceAddress=" + sourceAddress + ", destinationAddress=" + destinationAddress + ", destinationHostname=" + destinationHostname + '}';
+        return "\n" + "Version=" + Version + ",\n DHTL=" + DHTL + ",\n TypeOfService=" + TypeOfService + ",\n totalLength=" + totalLength + ", \nIdentification=" + Identification + ",\n moreFragment=" + moreFragment + ",\n TTL=" + TTL + ", \nProtocol=" + Protocol + ", \nheaderCheksum=" + headerCheksum + ", \nsourceAddress=" + sourceAddress + ", \ndestinationAddress=" + destinationAddress + ",\n destinationHostname=" + destinationHostname + '\n';
     }
-    
     public String cheksumInput() {
         return "Header{" + " Identification=" + Identification + ", Version=" + Version + ", DHTL=" + DHTL + ", TypeOfService=" + TypeOfService + ", totalLength=" + totalLength + ", Protocol=" + Protocol + ", sourceAddress=" + sourceAddress + ", destinationAddress=" + destinationAddress +", hostnameDestination=" + destinationHostname + '}';
     }
